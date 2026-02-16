@@ -1,0 +1,23 @@
+<script setup lang="ts">
+const visible = ref(false);
+</script>
+
+<template>
+  <Drawer v-model:visible="visible" position="right" class="settings-drawer">
+    <div class="flex flex-col gap-3 py-1">
+      <ColorModeButton />
+      <ScreenWakeLock />
+      <CheckUpdateButton />
+      <EnablePushButton />
+
+      <AboutApp />
+    </div>
+  </Drawer>
+
+  <Button
+    icon="pi pi-cog"
+    size="large"
+    severity="secondary"
+    @click="visible = true"
+  />
+</template>

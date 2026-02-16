@@ -1,0 +1,88 @@
+import type { AppRecord } from "@/types";
+import { useMainStore } from "@/stores/mainStore";
+import {
+  listRecordsFromIndexedDb,
+  saveRecordToIndexedDb,
+  listQueueItems,
+  removeQueueItem,
+} from "@/composables/useIndexedDb";
+import { useSupabaseClient } from "@/composables/useSupabase";
+
+const isNewer = (a?: string | null, b?: string | null) => {
+  if (!a) return false;
+  if (!b) return true;
+  return new Date(a).getTime() > new Date(b).getTime();
+};
+
+export function useSyncDb() {
+  const store = useMainStore();
+  const syncMessage = ref<string | null>(null);
+  const syncing = ref(false);
+  const TABLE_NAME = "records";
+
+  const syncDb = async () => {
+    if (syncing.value) return;
+    syncing.value = true;
+    store.isLoading = true;
+    syncMessage.value = null;
+    try {
+      const supabase = useSupabaseClient();
+      const nowIso = new Date().toISOString();
+
+      const queueItems = await listQueueItems();
+      for (const item of queueItems) {
+        if (item.type === "upsert") {
+          const { error: queueError } = await supabase
+            .from(TABLE_NAME)
+            .upsert({ ...item.record, syncedAt: nowIso }, { onConflict: "id" });
+          if (queueError) throw queueError;
+          await removeQueueItem(item.id);
+          await saveRecordToIndexedDb({ ...item.record, syncedAt: nowIso });
+        }
+      }
+
+      const localRecords = await listRecordsFromIndexedDb();
+      const { data: remoteRecords, error } = await supabase
+        .from(TABLE_NAME)
+        .select("*");
+      if (error) throw error;
+
+      const remoteList = (remoteRecords as AppRecord[]) ?? [];
+      const remoteById = new Map(remoteList.map((r) => [r.id, r]));
+
+      const toPush: AppRecord[] = [];
+      for (const local of localRecords) {
+        const remote = remoteById.get(local.id);
+        if (!remote || isNewer(local.updatedAt, remote.updatedAt)) {
+          toPush.push({ ...local, syncedAt: nowIso });
+        }
+      }
+
+      if (toPush.length) {
+        const { error: upsertError } = await supabase
+          .from(TABLE_NAME)
+          .upsert(toPush, { onConflict: "id" });
+        if (upsertError) throw upsertError;
+      }
+
+      const { data: refreshedRemote, error: refreshedError } = await supabase
+        .from(TABLE_NAME)
+        .select("*");
+      if (refreshedError) throw refreshedError;
+
+      const finalRemote = (refreshedRemote as AppRecord[]) ?? [];
+      for (const record of finalRemote) {
+        await saveRecordToIndexedDb({ ...record, syncedAt: nowIso });
+      }
+
+      syncMessage.value = "Sinhronizacija završena.";
+    } catch (err) {
+      syncMessage.value = "Sinhronizacija nije uspela.";
+    } finally {
+      store.isLoading = false;
+      syncing.value = false;
+    }
+  };
+
+  return { syncDb, syncMessage, syncing };
+}

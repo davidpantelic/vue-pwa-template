@@ -1,0 +1,91 @@
+@import "tailwindcss";
+
+@theme {
+  --breakpoint-xxs: 320px;
+  --breakpoint-xs: 425px;
+}
+
+:root {
+  color-scheme: light;
+}
+html.dark {
+  color-scheme: dark;
+}
+
+html,
+body {
+  /* prevent “drag to refresh” / bounce */
+  overscroll-behavior-y: none;
+}
+
+body {
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  min-height: 100svh;
+  font-family:
+    Inter,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    Oxygen,
+    Ubuntu,
+    Cantarell,
+    "Fira Sans",
+    "Droid Sans",
+    "Helvetica Neue",
+    sans-serif;
+  font-size: 15px;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+img {
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
+/* #installInstructions {
+   display: none
+}
+@media (display-mode: browser) {
+   #installInstructions {
+     display: block
+   }
+} */
+
+.p-toast {
+  max-width: calc(100% - 40px);
+}
+
+.p-toast-message-content {
+  justify-content: space-between;
+}
+
+.p-dialog {
+  margin-inline: 20px !important;
+}
+
+.p-dialog.install-instructions-dialog {
+  max-width: 550px;
+}
+
+.p-dialog.update-dialog {
+  max-width: 550px;
+}
+
+.p-dialog.about-dialog .p-accordionheader {
+  padding-inline: 0;
+}
+
+.p-dialog.about-dialog .p-accordioncontent-content {
+  padding-inline: 0;
+}
+
+.settings-drawer.p-drawer {
+  width: auto !important;
+}
+.settings-drawer.p-drawer .p-drawer-header {
+  justify-content: center;
+}
