@@ -21,8 +21,11 @@ This is a Progressive Web App (PWA) built with Vue 3, TypeScript, and Vite. The 
 ## Features
 
 - **Progressive Web App (PWA)** - Installable on desktop and mobile devices
+- **API-ready** - Loader, error handling, offline queue
 - **Offline Support** - Full functionality when internet connection is unavailable
 - **Push Notifications** - Real-time notifications on supported devices
+- **Screen Wake Lock** - Toggle on/off screen wake lock
+- **Theme Support** - Light / Dark
 - **Responsive Design** - Works seamlessly on all screen sizes
 - **Type-Safe** - Built with TypeScript for better code quality
 - **Fast & Optimized** - Vite ensures quick build times and optimal performance
