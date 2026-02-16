@@ -1,7 +1,7 @@
 # vue-pwa-template
 A modern, production-ready Vue3 PWA template for building Progressive Web Applications.
 
-## Table of Contents 📋
+## Table of Contents
 
 - [Description](#description)
 - [Features](#features)
@@ -14,11 +14,11 @@ A modern, production-ready Vue3 PWA template for building Progressive Web Applic
 - [License](#license)
 - [Trademark Notice](#trademark-notice)
 
-## Description 📝
+## Description
 
 This is a Progressive Web App (PWA) built with Vue 3, TypeScript, and Vite. The application includes offline support, push notifications, and installability across all modern browsers.
 
-## Features ✨
+## Features
 
 - **Progressive Web App (PWA)** - Installable on desktop and mobile devices
 - **Offline Support** - Full functionality when internet connection is unavailable
@@ -28,7 +28,7 @@ This is a Progressive Web App (PWA) built with Vue 3, TypeScript, and Vite. The 
 - **Fast & Optimized** - Vite ensures quick build times and optimal performance
 - **Service Worker** - Background synchronization and caching strategies
 
-## Tech Stack 🛠️
+## Tech Stack
 
 - **Frontend Framework:** Vue 3 (Composition API with)
 - **Backend:** Supabase
@@ -41,14 +41,14 @@ This is a Progressive Web App (PWA) built with Vue 3, TypeScript, and Vite. The 
 - **State Management:** [Pinia / Context API - adjust as needed]
 - **Testing:** Vitest
 
-## Requirements 📦
+## Requirements
 
 - **Node.js:** v16.0.0 or higher
 - **npm:** v7.0.0 or higher (or `pnpm` v6.0.0+)
 - **Modern Browser:** Chrome, Firefox, Safari, Edge with ES2020+ support
 - **For best experience:** Google Chrome (for PWA installation)
 
-## Installation 🚀
+## Installation
 
 1. **Clone the repository**
    ```bash
@@ -72,7 +72,7 @@ This is a Progressive Web App (PWA) built with Vue 3, TypeScript, and Vite. The 
 
    The app will be available at `http://localhost:5173`
 
-## Usage 💻
+## Usage
 
 ### Development
 
@@ -104,7 +104,7 @@ npm run test
 npm run lint
 ```
 
-## Configuration ⚙️
+## Configuration
 
 ### PWA Installation
 
@@ -122,7 +122,7 @@ Users can enable notifications by clicking the notification icon. The app will r
 
 The app automatically caches essential resources. When offline, a network indicator appears in the UI. Data syncs automatically when connection is restored.
 
-## Building for Production 🏗️
+## Building for Production
 
 ```bash
 # Build the application
@@ -136,13 +136,13 @@ npm run preview
 
 The `dist/` folder contains the production-ready files ready for deployment.
 
-## License 📄
+## License
 
 MIT © Webdak
 
 This project is licensed under the [MIT License](LICENSE) - see the LICENSE file for details.
 
-## Trademark Notice ™️
+## Trademark Notice
 
 The name **Webdak**, the Webdak logo, and related branding
 are trademarks of Webdak.
