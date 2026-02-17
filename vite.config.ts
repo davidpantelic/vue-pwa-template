@@ -140,6 +140,9 @@ export default defineConfig({
           from: "primevue/useconfirm",
           imports: ["useConfirm"],
         },
+        {
+          "vue-i18n": ["useI18n"],
+        },
       ],
       dts: "src/types/generated/auto-imports.d.ts",
       vueTemplate: true,

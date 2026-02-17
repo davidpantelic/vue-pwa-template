@@ -1,4 +1,5 @@
 # vue-pwa-template
+
 A modern, production-ready Vue3 PWA template for building Progressive Web Applications.
 
 ## Table of Contents
@@ -26,6 +27,7 @@ This is a Progressive Web App (PWA) built with Vue 3, TypeScript, and Vite. The 
 - **Push Notifications** - Real-time notifications on supported devices
 - **Screen Wake Lock** - Toggle on/off screen wake lock
 - **Theme Support** - Light / Dark
+- **Internationalization** - Multi language, localization features, etc
 - **Responsive Design** - Works seamlessly on all screen sizes
 - **Type-Safe** - Built with TypeScript for better code quality
 - **Fast & Optimized** - Vite ensures quick build times and optimal performance
@@ -38,8 +40,9 @@ This is a Progressive Web App (PWA) built with Vue 3, TypeScript, and Vite. The 
 - **Language:** JavaScript/TypeScript
 - **Build Tool:** Vite
 - **UI Components:** PrimeVue
-- **Styling:** Tailwind CSS/SCSS
+- **Styling:** Tailwind, CSS/SCSS, PrimeVue presets
 - **Package Manager:** npm / pnpm
+- **Internationalization** - i18n
 - **PWA Support:** Service Workers, Web App Manifest
 - **State Management:** [Pinia / Context API - adjust as needed]
 - **Testing:** Vitest
@@ -54,12 +57,14 @@ This is a Progressive Web App (PWA) built with Vue 3, TypeScript, and Vite. The 
 ## Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/davidpantelic/vue-pwa-template.git
    cd vue-pwa-template
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    # or
@@ -67,6 +72,7 @@ This is a Progressive Web App (PWA) built with Vue 3, TypeScript, and Vite. The 
    ```
 
 3. **Start development server**
+
    ```bash
    npm run dev
    # or
