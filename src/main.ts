@@ -21,6 +21,9 @@ app.use(router);
 app.use(head);
 
 app.use(PrimeVue, {
+  // unstyled: true,
+  // ripple: true,
+  // inputVariant: "filled",
   theme: {
     preset: PrimeVueCustomPreset,
     options: {

@@ -7,9 +7,11 @@
 
 :root {
   color-scheme: light;
+  --body-bg: var(--p-surface-50);
 }
-html.dark {
+:root.dark-mode {
   color-scheme: dark;
+  --body-bg: var(--p-surface-950);
 }
 
 html,
@@ -21,6 +23,7 @@ body {
 body {
   padding-top: env(safe-area-inset-top);
   padding-bottom: env(safe-area-inset-bottom);
+  background-color: var(--body-bg);
   min-height: 100svh;
   font-family:
     Inter,
@@ -39,6 +42,41 @@ body {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+h1 {
+  @apply text-xl md:text-2xl;
+  font-weight: 400;
+}
+
+h2 {
+  @apply text-lg md:text-xl;
+  font-weight: 400;
+}
+
+h3 {
+  @apply text-base md:text-lg;
+  font-weight: 400;
+}
+
+h4,
+h5,
+h6 {
+  @apply text-sm md:text-base;
+  font-weight: 400;
+}
+
+p,
+a {
+  @apply text-sm md:text-base;
+  font-weight: 400;
+}
+
+input,
+textarea,
+select {
+  @apply text-sm! md:text-base!;
+  font-weight: 400;
 }
 
 img {
