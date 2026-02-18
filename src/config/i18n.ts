@@ -110,11 +110,16 @@ const numberFormats = {
   },
 } as const;
 
+const getInitialLocale = () => {
+  const stored = localStorage.getItem("selected_locale");
+  return stored || "sr";
+};
+
 const i18nOptions: I18nOptions = {
   // globalInjection: true,
   escapeParameter: true,
   legacy: false,
-  locale: "sr",
+  locale: getInitialLocale(),
   fallbackLocale: "sr",
   messages,
   datetimeFormats,
