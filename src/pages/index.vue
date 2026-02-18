@@ -1,24 +1,10 @@
-<script setup lang="ts">
-const { t } = useI18n();
-</script>
+<script setup lang="ts"></script>
 
 <template>
   <main>
     <h1>Homepage <span class="text-3xl">v33</span></h1>
     <br />
-    <div class="locale-changer">
-      <select v-model="$i18n.locale">
-        <option
-          v-for="locale in $i18n.availableLocales"
-          :key="`locale-${locale}`"
-          :value="locale"
-        >
-          {{ locale }}
-        </option>
-      </select>
-    </div>
-    <br />
-    <h2>{{ t("msg.hello") }}</h2>
+    <h2>{{ $t("msg.hello") }}</h2>
     <p>{{ $d(new Date(), "time") }}</p>
     <p>{{ $d(new Date(), "short") }}</p>
     <p>{{ $d(new Date(), "long") }}</p>

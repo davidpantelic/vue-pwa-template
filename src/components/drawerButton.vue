@@ -9,8 +9,8 @@ const visible = ref(false);
       <ScreenWakeLock />
       <CheckUpdateButton />
       <EnablePushButton />
-
       <AboutApp />
+      <LocaleChange />
     </div>
   </Drawer>
 
