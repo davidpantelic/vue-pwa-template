@@ -19,6 +19,8 @@ const readFromIndexedDB = async () => {
     readMessage.value = t("api.loadingFailed");
   } finally {
     store.isLoading = false;
+    await delay(2000);
+    readMessage.value = null;
   }
 };
 </script>
