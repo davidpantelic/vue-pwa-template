@@ -61,20 +61,20 @@ const writeToSupabase = async () => {
       v-model="title"
       name="title"
       type="text"
-      :placeholder="t('form.test.fields.title')"
+      :placeholder="t('form.fields.title')"
       fluid
     />
     <InputText
       v-model="body"
       name="body"
       type="text"
-      :placeholder="t('form.test.fields.body')"
+      :placeholder="t('form.fields.body')"
       fluid
     />
   </div>
 
   <Button
-    :icon="isLoading ? 'pi pi-sync pi-spin' : 'pi pi-sync'"
+    :icon="isLoading ? 'pi pi-spinner pi-spin' : 'pi pi-sync'"
     :label="t('api.writeToSB')"
     size="small"
     @click="writeToSupabase"

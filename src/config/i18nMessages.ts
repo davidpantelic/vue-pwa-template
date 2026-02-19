@@ -20,6 +20,8 @@ export const messages = {
       restore: "Povrati",
       later: "Kasnije",
       send: "Pošalji",
+      login: "Prijavi se",
+      logout: "Odjavi se",
     },
     meta: {
       description: "Webdak Vue3 PWA šablon",
@@ -156,21 +158,27 @@ export const messages = {
       writeLocallySuccess: "Sačuvano lokalno, čeka sinhronizaciju",
     },
     form: {
-      test: {
-        fields: {
-          title: "Naslov",
-          body: "Poruka",
-          url: "link",
-          button: "Pošalji",
-        },
-        message: {
-          success: "Push obaveštenje poslato.",
-          error: "Slanje push obaveštenja nije uspelo.",
-        },
+      fields: {
+        title: "Naslov",
+        username: "Korisničko ime",
+        password: "Lozinka",
+        body: "Poruka",
+        url: "link",
+        button: "Pošalji",
+      },
+      message: {
+        success: "Push obaveštenje poslato",
+        error: "Slanje push obaveštenja nije uspelo",
+        loginFailed: "Prijava nije uspela",
+        loginSuccess: "Uspešna prijava",
+        logoutFailed: "Odjava nije uspela",
+        logoutSuccess: "Uspešna odjava",
       },
       validation: {
-        titleRequired: "Naslov je obavezan.",
-        usernameRequired: "Korisničko ime je obavezno.",
+        titleRequired: "Naslov je obavezan",
+        usernameRequired: "Korisničko ime je obavezno",
+        emailRequired: "Email je obavezan",
+        passwordRequired: "Lozinka je obavezna",
       },
     },
     aboutTitle: "Pomoć",
@@ -232,6 +240,8 @@ export const messages = {
       restore: "Restore",
       later: "Later",
       send: "Send",
+      login: "Login",
+      logout: "Logout",
     },
     meta: {
       description: "Reusable Vue3 PWA template by Webdak",
@@ -368,21 +378,27 @@ export const messages = {
       writeLocallySuccess: "Saved locally, waiting for sync",
     },
     form: {
-      test: {
-        fields: {
-          title: "Title",
-          body: "Message",
-          url: "Link",
-          button: "Send",
-        },
-        message: {
-          success: "Push notification sent.",
-          error: "Failed to send push notification.",
-        },
+      fields: {
+        title: "Title",
+        username: "Username",
+        password: "Password",
+        body: "Message",
+        url: "Link",
+        button: "Send",
+      },
+      message: {
+        success: "Push notification sent",
+        error: "Failed to send push notification",
+        loginFailed: "Login failed",
+        loginSuccess: "Successful login",
+        logoutFailed: "Logout failed",
+        logoutSuccess: "Successful logout",
       },
       validation: {
-        titleRequired: "Title is required.",
-        usernameRequired: "Username is required.",
+        titleRequired: "Title is required",
+        usernameRequired: "Username is required",
+        emailRequired: "Email is required",
+        passwordRequired: "Password is required",
       },
     },
     aboutTitle: "Help",

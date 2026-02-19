@@ -11,7 +11,7 @@ const { syncDb, syncMessage } = useSyncDb();
     {{ $t("api.syncOnReconnect") }}
   </label>
   <Button
-    :icon="store.isLoading ? 'pi pi-sync pi-spin' : 'pi pi-sync'"
+    :icon="store.isLoading ? 'pi pi-spinner pi-spin' : 'pi pi-sync'"
     :label="$t('api.syncDb')"
     size="small"
     @click="syncDb"

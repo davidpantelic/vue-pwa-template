@@ -25,7 +25,7 @@ const readFromIndexedDB = async () => {
 
 <template>
   <Button
-    :icon="isLoading ? 'pi pi-sync pi-spin' : 'pi pi-sync'"
+    :icon="isLoading ? 'pi pi-spinner pi-spin' : 'pi pi-sync'"
     :label="t('api.readFromIDB')"
     size="small"
     @click="readFromIndexedDB"

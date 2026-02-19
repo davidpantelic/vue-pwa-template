@@ -132,7 +132,7 @@ const softDelete = async (record: AppRecord) => {
 <template>
   <div class="flex items-center gap-2">
     <Button
-      :icon="isLoading ? 'pi pi-sync pi-spin' : 'pi pi-sync'"
+      :icon="isLoading ? 'pi pi-spinner pi-spin' : 'pi pi-sync'"
       :label="$t('words.refresh')"
       size="small"
       @click="loadRecords"

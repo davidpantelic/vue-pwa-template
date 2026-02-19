@@ -26,7 +26,7 @@ const onCheckForUpdate = async () => {
 <template>
   <Transition name="update-check-button" appear>
     <Button
-      :icon="checking ? 'pi pi-sync pi-spin' : ''"
+      :icon="checking ? 'pi pi-spinner pi-spin' : ''"
       class="w-12 h-12.25 p-0!"
       severity="secondary"
       size="large"

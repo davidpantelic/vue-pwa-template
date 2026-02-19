@@ -153,7 +153,7 @@ onMounted(async () => {
       notificationsEnabled
         ? 'pi pi-bell'
         : isLoading
-          ? 'pi pi-sync pi-spin'
+          ? 'pi pi-spinner pi-spin'
           : 'pi pi-bell-slash'
     "
     size="large"

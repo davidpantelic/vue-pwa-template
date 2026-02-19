@@ -58,7 +58,9 @@ useSeoMeta({
         <OfflineIndicator />
         <UpdateToastAndButton />
         <InstallToastAndButton />
-
+        <Suspense>
+          <Profile />
+        </Suspense>
         <DrawerButton />
       </div>
     </nav>

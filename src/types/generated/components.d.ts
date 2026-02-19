@@ -47,6 +47,8 @@ declare module 'vue' {
     LocaleChange: typeof import('./../../components/localeChange.vue')['default']
     Message: typeof import('primevue/message')['default']
     OfflineIndicator: typeof import('./../../components/offlineIndicator.vue')['default']
+    Password: typeof import('primevue/password')['default']
+    Profile: typeof import('./../../components/profile.vue')['default']
     ReadFromIndexedDB: typeof import('./../../components/readFromIndexedDB.vue')['default']
     ReadFromSupabase: typeof import('./../../components/readFromSupabase.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']

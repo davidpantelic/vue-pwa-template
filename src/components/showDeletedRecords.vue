@@ -85,7 +85,7 @@ const restoreRecord = async (record: AppRecord) => {
     {{ t("api.showDeleted") }}
   </label>
   <Button
-    :icon="isLoading ? 'pi pi-sync pi-spin' : 'pi pi-sync'"
+    :icon="isLoading ? 'pi pi-spinner pi-spin' : 'pi pi-sync'"
     :label="t('words.refresh')"
     size="small"
     @click="loadRecords"
