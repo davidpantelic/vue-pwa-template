@@ -2,6 +2,7 @@
 const { checkForUpdate } = usePwaUpdate();
 const toast = useToast();
 const checking = ref(false);
+const { t } = useI18n();
 
 const onCheckForUpdate = async () => {
   if (checking.value) return;
@@ -12,8 +13,8 @@ const onCheckForUpdate = async () => {
     toast.add({
       group: "upToDateToastGroup",
       severity: "success",
-      summary: "Aplikacija je ažurirana",
-      detail: "Već imate najnoviju verziju.",
+      summary: t("toasts.upToDateToastGroup.success.summary"),
+      detail: t("toasts.upToDateToastGroup.success.detail"),
       life: 3000,
     });
   }

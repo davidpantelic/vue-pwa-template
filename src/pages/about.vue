@@ -2,10 +2,10 @@
 
 <template>
   <main>
-    <h1>ArkUI</h1>
+    <!-- <h1>ArkUI</h1>
     <ArkFormatRelativeTime :value="new Date('2026-01-01')" />
 
-    <Divider />
+    <Divider /> -->
 
     <h1>API testing</h1>
     <br />

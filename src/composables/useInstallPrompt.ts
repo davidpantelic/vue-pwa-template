@@ -23,7 +23,7 @@ function getDismissedUntil(): number {
 
 function setDismissedForHours(hours: number) {
   const seconds = Math.round(hours * 60 * 60);
-  console.log(`dismissed for ${seconds} seconds`);
+  // console.log(`dismissed for ${seconds} seconds`);
   const until = Date.now() + hours * 60 * 60 * 1000;
   localStorage.setItem(DISMISS_KEY, String(until));
 }

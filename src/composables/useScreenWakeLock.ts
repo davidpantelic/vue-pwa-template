@@ -1,4 +1,5 @@
 export function useScreenWakeLock() {
+  const { t } = useI18n();
   const toast = useToast();
   // keep a single wake lock instance across mounts
   let cached = (
@@ -21,8 +22,8 @@ export function useScreenWakeLock() {
       toast.add({
         group: "screenWakeLockToastGroup",
         severity: "success",
-        summary: "Svetlo uključeno",
-        detail: "Displej će sada biti osvetljen konstanto.",
+        summary: t("toasts.screenWakeLockToastGroup.success.summary"),
+        detail: t("toasts.screenWakeLockToastGroup.success.detail"),
         life: 3000,
       });
     } catch (e) {
@@ -31,8 +32,8 @@ export function useScreenWakeLock() {
       toast.add({
         group: "screenWakeLockToastGroup",
         severity: "error",
-        summary: "Nažalost...",
-        detail: "Na ovom uređaju nije moguće uključiti konstanto osvetljenje.",
+        summary: t("toasts.screenWakeLockToastGroup.error.summary"),
+        detail: t("toasts.screenWakeLockToastGroup.error.detail"),
         life: 3000,
       });
     }

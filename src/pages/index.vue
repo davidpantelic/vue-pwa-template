@@ -2,9 +2,9 @@
 
 <template>
   <main>
-    <h1>Homepage <span class="text-3xl">v33</span></h1>
+    <h1>Webdak Vue PWA <span class="text-3xl">v33</span></h1>
     <br />
-    <h2>{{ $t("msg.hello") }}</h2>
+    <h2>{{ $t("words.hello") }}</h2>
     <p>{{ $d(new Date(), "time") }}</p>
     <p>{{ $d(new Date(), "short") }}</p>
     <p>{{ $d(new Date(), "long") }}</p>

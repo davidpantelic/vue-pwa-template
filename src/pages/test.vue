@@ -3,13 +3,14 @@ import type { FormValues, FormErrors } from "@/types";
 
 const model = ref("");
 
+const { t } = useI18n();
 const toast = useToast();
 
 const show = () => {
   toast.add({
     severity: "info",
-    summary: "Info",
-    detail: "Message Content",
+    summary: "Test",
+    detail: "Test",
     life: 3000,
   });
 };
@@ -22,7 +23,7 @@ const resolver = ({ values }: { values: FormValues }) => {
   const errors: FormErrors = {};
 
   if (!values.username) {
-    errors.username = [{ message: "Username is required." }];
+    errors.username = [{ message: t("form.validation.usernameRequired") }];
   }
 
   return {
@@ -35,7 +36,7 @@ const onFormSubmit = ({ valid }: { valid: boolean }) => {
   if (valid) {
     toast.add({
       severity: "success",
-      summary: "Form is submitted.",
+      summary: t("words.hello"),
       detail: initialValues.username,
       life: 3000,
     });
@@ -76,7 +77,7 @@ const onFormSubmit = ({ valid }: { valid: boolean }) => {
       :initialValues
       :resolver
       @submit="onFormSubmit"
-      class="flex flex-col gap-4 w-full sm:w-56"
+      class="flex flex-col gap-4"
     >
       <div class="flex gap-1">
         <InputText
@@ -100,7 +101,7 @@ const onFormSubmit = ({ valid }: { valid: boolean }) => {
         size="small"
         icon="pi pi-search"
         iconPos="right"
-        label="Submit"
+        :label="t('words.send')"
       />
     </Form>
   </main>

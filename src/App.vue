@@ -1,4 +1,6 @@
 <script setup lang="ts">
+const { t } = useI18n();
+
 useAppTheme();
 useAutoSync();
 
@@ -17,12 +19,14 @@ onMounted(async () => {
   }
 });
 
+const metaDescription = computed(() => t("meta.description"));
+
 useHead({
   title: "Webdak PWA",
   meta: [
     {
       name: "description",
-      content: "Reusable Vue3 PWA template by Webdak",
+      content: metaDescription,
     },
   ],
   link: [
@@ -35,7 +39,7 @@ useHead({
 
 useSeoMeta({
   ogTitle: "Webdak PWA",
-  ogDescription: "Reusable Vue3 PWA template by Webdak",
+  ogDescription: metaDescription,
   ogImage: "/social_share.jpg",
 });
 </script>
@@ -45,9 +49,9 @@ useSeoMeta({
     <img alt="Vue logo" class="logo size-20" src="@/assets/logo.svg" />
 
     <nav class="flex gap-3 items-center pt-16">
-      <RouterLink to="/">Home</RouterLink>
-      <RouterLink to="/about">About</RouterLink>
-      <RouterLink to="/test">Test</RouterLink>
+      <RouterLink to="/">{{ t("words.home") }}</RouterLink>
+      <RouterLink to="/about">Test 1</RouterLink>
+      <RouterLink to="/test">Test 2</RouterLink>
       <div
         class="absolute right-1 top-1 flex flex-wrap gap-1 xxs:gap-2 xs:gap-3 p-1 xs:p-2 max-w-full"
       >

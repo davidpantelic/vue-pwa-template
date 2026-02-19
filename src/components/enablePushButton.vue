@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useMainStore } from "@/stores/mainStore";
 
+const { t } = useI18n();
 const toast = useToast();
 const store = useMainStore();
 const notificationsEnabled = ref(false);
@@ -36,8 +37,8 @@ const enablePush = async () => {
     toast.add({
       group: "notificationsToastGroup",
       severity: "danger",
-      summary: "Nije moguće omogućiti obaveštenja.",
-      detail: "Service Worker nije podržan.",
+      summary: t("toasts.notificationsToastGroup.danger1.summary"),
+      detail: t("toasts.notificationsToastGroup.danger1.detail1"),
       life: 3000,
     });
     return;
@@ -47,8 +48,8 @@ const enablePush = async () => {
     toast.add({
       group: "notificationsToastGroup",
       severity: "danger",
-      summary: "Nije moguće omogućiti obaveštenja.",
-      detail: "Push Manager nije podržan.",
+      summary: t("toasts.notificationsToastGroup.danger1.summary"),
+      detail: t("toasts.notificationsToastGroup.danger1.detail2"),
       life: 3000,
     });
     return;
@@ -60,9 +61,8 @@ const enablePush = async () => {
       toast.add({
         group: "notificationsToastGroup",
         severity: "warn",
-        summary: "Obaveštenja su blokirana.",
-        detail:
-          "Obaveštenja su blokirana u pretraživaču. Otvorite podešavanja sajta i ponovo ih omogućite. Ili ih resetujte pa opet kliknite na ovo isto dugme u aplikaciji.",
+        summary: t("toasts.notificationsToastGroup.warn1.summary"),
+        detail: t("toasts.notificationsToastGroup.warn1.detail"),
         life: 8000,
       });
       notificationsEnabled.value = false;
@@ -74,9 +74,8 @@ const enablePush = async () => {
       toast.add({
         group: "notificationsToastGroup",
         severity: "warn",
-        summary: "Pokušajte ponovo.",
-        detail:
-          "Dozvola nije izabrana. Kliknite ponovo i odaberite 'Dozvoli' ili 'Allow'.",
+        summary: t("toasts.notificationsToastGroup.warn2.summary"),
+        detail: t("toasts.notificationsToastGroup.warn2.detail"),
         life: 5000,
       });
       notificationsEnabled.value = false;
@@ -86,8 +85,8 @@ const enablePush = async () => {
       toast.add({
         group: "notificationsToastGroup",
         severity: "warn",
-        summary: "Obaveštenja blokirana.",
-        detail: "Dozvola za obaveštenja nije odobrena.",
+        summary: t("toasts.notificationsToastGroup.warn3.summary"),
+        detail: t("toasts.notificationsToastGroup.warn3.detail"),
         life: 3000,
       });
       notificationsEnabled.value = false;
@@ -103,7 +102,7 @@ const enablePush = async () => {
         toast.add({
           group: "notificationsToastGroup",
           severity: "danger",
-          summary: "VAPID public key nije postavljen.",
+          summary: t("toasts.notificationsToastGroup.danger2.summary"),
           life: 3000,
         });
         return;
@@ -118,7 +117,7 @@ const enablePush = async () => {
     toast.add({
       group: "notificationsToastGroup",
       severity: "success",
-      summary: "Obaveštenja su omogućena.",
+      summary: t("toasts.notificationsToastGroup.success.summary"),
       life: 3000,
     });
     notificationsEnabled.value = true;
@@ -126,7 +125,7 @@ const enablePush = async () => {
     toast.add({
       group: "notificationsToastGroup",
       severity: "danger",
-      summary: "Neuspešno omogućavanje obaveštenja.",
+      summary: t("toasts.notificationsToastGroup.danger3.summary"),
       life: 3000,
     });
     notificationsEnabled.value = false;

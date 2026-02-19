@@ -2,6 +2,7 @@
 import { useMainStore } from "@/stores/mainStore";
 import type { AppRecord } from "@/types";
 
+const { t } = useI18n();
 const store = useMainStore();
 const TABLE_NAME = "records";
 const records = ref<AppRecord[] | null>(null);
@@ -18,9 +19,9 @@ const readFromSupabase = async () => {
       .order("createdAt", { ascending: false });
     if (error) throw error;
     records.value = (data as AppRecord[]) ?? [];
-    if (!records.value.length) readMessage.value = "Nema zapisa u Supabase.";
+    if (!records.value.length) readMessage.value = t("api.noRecords");
   } catch (err) {
-    readMessage.value = "Čitanje nije uspelo.";
+    readMessage.value = t("api.loadingFailed");
   } finally {
     store.isLoading = false;
   }
@@ -30,7 +31,7 @@ const readFromSupabase = async () => {
 <template>
   <Button
     :icon="store.isLoading ? 'pi pi-sync pi-spin' : 'pi pi-sync'"
-    label="Read from Supabase"
+    :label="t('api.readFromSB')"
     size="small"
     @click="readFromSupabase"
   />

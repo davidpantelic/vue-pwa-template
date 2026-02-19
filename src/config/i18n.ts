@@ -1,18 +1,6 @@
 import { createI18n } from "vue-i18n";
 import type { I18n, I18nOptions } from "vue-i18n";
-
-const messages = {
-  sr: {
-    msg: {
-      hello: "zdravo svete",
-    },
-  },
-  en: {
-    msg: {
-      hello: "hello world",
-    },
-  },
-};
+import { messages } from "@/config/i18nMessages";
 
 const datetimeFormats = {
   sr: {

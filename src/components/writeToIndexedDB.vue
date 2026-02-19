@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useMainStore } from "@/stores/mainStore";
 
+const { t } = useI18n();
 const store = useMainStore();
 
 const title = ref("");
@@ -9,7 +10,9 @@ const saveMessage = ref<string | null>(null);
 
 const writeToIndexedDB = async () => {
   if (!title.value.trim()) {
-    saveMessage.value = "Naslov je obavezan.";
+    saveMessage.value = t("form.validation.titleRequired");
+    await delay(2000);
+    saveMessage.value = null;
     return;
   }
 
@@ -21,13 +24,15 @@ const writeToIndexedDB = async () => {
       body: body.value.trim() || undefined,
     });
     await saveRecordToIndexedDb(record);
-    saveMessage.value = "Sačuvano u IndexedDB.";
+    saveMessage.value = t("api.writeToIDBSuccess");
     title.value = "";
     body.value = "";
   } catch (err) {
-    saveMessage.value = "Čuvanje nije uspelo.";
+    saveMessage.value = t("api.writeToDBFailed");
   } finally {
     store.isLoading = false;
+    await delay(2000);
+    saveMessage.value = null;
   }
 };
 </script>
@@ -36,23 +41,23 @@ const writeToIndexedDB = async () => {
   <div class="flex flex-col gap-2 max-w-lg mb-3">
     <InputText
       v-model="title"
-      name="username"
+      name="title"
       type="text"
-      placeholder="Title"
+      :placeholder="t('form.test.fields.title')"
       fluid
     />
     <InputText
       v-model="body"
-      name="username"
+      name="body"
       type="text"
-      placeholder="Body"
+      :placeholder="t('form.test.fields.body')"
       fluid
     />
   </div>
 
   <Button
     :icon="store.isLoading ? 'pi pi-sync pi-spin' : 'pi pi-sync'"
-    label="Write to IndexedDB"
+    :label="t('api.writeToIDB')"
     size="small"
     @click="writeToIndexedDB"
   />

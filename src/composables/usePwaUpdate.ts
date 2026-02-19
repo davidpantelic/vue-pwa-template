@@ -142,7 +142,7 @@ export function usePwaUpdate() {
   }
 
   function dismissUpdate() {
-    console.log("dismissUpdate");
+    // console.log("dismissUpdate");
     showRefreshToast.value = false;
   }
 

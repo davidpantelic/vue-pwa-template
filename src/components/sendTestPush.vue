@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { useMainStore } from "@/stores/mainStore";
 
+const { t } = useI18n();
 const store = useMainStore();
 const sendMessage = ref<string | null>(null);
-const pushTitle = ref("Test notification");
-const pushBody = ref("Hello from Webdak PWA");
+const pushTitle = ref("Test");
+const pushBody = ref("Test");
 const pushUrl = ref("/");
 
 const sendTestPush = async () => {
@@ -23,9 +24,9 @@ const sendTestPush = async () => {
       },
     });
     if (error) throw error;
-    sendMessage.value = "Test push poslat.";
+    sendMessage.value = t("form.test.message.success");
   } catch (err) {
-    sendMessage.value = "Slanje push notifikacije nije uspelo.";
+    sendMessage.value = t("form.test.message.error");
   } finally {
     store.isLoading = false;
   }
@@ -35,14 +36,26 @@ const sendTestPush = async () => {
 <template>
   <div>
     <div class="flex flex-col gap-2 max-w-lg">
-      <InputText v-model="pushTitle" placeholder="Title" fluid />
-      <InputText v-model="pushBody" placeholder="Body" fluid />
-      <InputText v-model="pushUrl" placeholder="Open URL" fluid />
+      <InputText
+        v-model="pushTitle"
+        :placeholder="t('form.test.fields.title')"
+        fluid
+      />
+      <InputText
+        v-model="pushBody"
+        :placeholder="t('form.test.fields.body')"
+        fluid
+      />
+      <InputText
+        v-model="pushUrl"
+        :placeholder="t('form.test.fields.url')"
+        fluid
+      />
     </div>
     <Button
       class="mt-2"
       :icon="store.isLoading ? 'pi pi-sync pi-spin' : 'pi pi-send'"
-      label="Send Test Push"
+      :label="t('form.test.fields.button')"
       @click="sendTestPush"
     />
     <div v-if="sendMessage" class="mt-2 text-sm opacity-80">

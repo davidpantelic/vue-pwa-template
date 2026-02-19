@@ -2,6 +2,7 @@
 import type { AppRecord, QueueItem } from "@/types";
 import { useMainStore } from "@/stores/mainStore";
 
+const { t } = useI18n();
 const store = useMainStore();
 const online = useOnline();
 const TABLE_NAME = "records";
@@ -18,9 +19,9 @@ const loadRecords = async () => {
   try {
     const result = await listRecordsFromIndexedDb();
     records.value = result.filter((r) => !r.deletedAt);
-    if (!records.value.length) message.value = "Nema zapisa.";
+    if (!records.value.length) message.value = t("api.noRecords");
   } catch (err) {
-    message.value = "Učitavanje nije uspelo.";
+    message.value = t("api.loadingFailed");
   } finally {
     store.isLoading = false;
   }
@@ -53,7 +54,7 @@ const enqueueUpsert = async (record: AppRecord) => {
 
 const saveEdit = async (record: AppRecord) => {
   if (!editTitle.value.trim()) {
-    message.value = "Naslov je obavezan.";
+    message.value = t("form.validation.titleRequired");
     return;
   }
 
@@ -80,11 +81,11 @@ const saveEdit = async (record: AppRecord) => {
       await enqueueUpsert(updated);
     }
 
-    message.value = "Izmena sačuvana.";
+    message.value = t("api.changeSaved");
     cancelEdit();
     await loadRecords();
   } catch (err) {
-    message.value = "Čuvanje izmene nije uspelo.";
+    message.value = t("api.changeFailed");
     if (online.value) {
       await enqueueUpsert({ ...updated, syncedAt: null });
     }
@@ -116,11 +117,11 @@ const softDelete = async (record: AppRecord) => {
       await enqueueUpsert(updated);
     }
 
-    message.value = "Obrisano (soft delete).";
+    message.value = t("api.deleteSuccess");
     if (editingId.value === record.id) cancelEdit();
     await loadRecords();
   } catch (err) {
-    message.value = "Brisanje nije uspelo.";
+    message.value = t("api.deleteFailed");
     if (online.value) {
       await enqueueUpsert({ ...updated, syncedAt: null });
     }
@@ -134,7 +135,7 @@ const softDelete = async (record: AppRecord) => {
   <div class="flex items-center gap-2">
     <Button
       :icon="store.isLoading ? 'pi pi-sync pi-spin' : 'pi pi-sync'"
-      label="Refresh"
+      :label="$t('words.refresh')"
       size="small"
       @click="loadRecords"
     />
@@ -153,13 +154,13 @@ const softDelete = async (record: AppRecord) => {
         <div class="flex gap-2">
           <Button
             icon="pi pi-check"
-            label="Save"
+            :label="$t('words.save')"
             size="small"
             @click="saveEdit(record)"
           />
           <Button
             icon="pi pi-times"
-            label="Cancel"
+            :label="$t('words.cancel')"
             size="small"
             severity="secondary"
             @click="cancelEdit"
@@ -173,21 +174,21 @@ const softDelete = async (record: AppRecord) => {
             {{ record.body }}
           </div>
           <div class="text-xs opacity-60 mt-1">
-            Updated: {{ record.updatedAt }}
+            {{ $t("words.updated") }}: {{ record.updatedAt }}
           </div>
         </div>
         <div class="flex gap-2">
           <Button
             icon="pi pi-pencil"
             size="small"
-            label="Edit"
+            :label="$t('words.edit')"
             @click="startEdit(record)"
           />
           <Button
             icon="pi pi-trash"
             size="small"
             severity="danger"
-            label="Delete"
+            :label="$t('words.delete')"
             @click="softDelete(record)"
           />
         </div>

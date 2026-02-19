@@ -14,4 +14,6 @@
     success-icon="pi pi-bell"
     position="bottom-right"
   />
+
+  <Toast group="offlineToastGroup" position="bottom-right" />
 </template>

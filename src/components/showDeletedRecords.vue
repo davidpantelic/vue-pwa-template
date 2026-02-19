@@ -2,6 +2,7 @@
 import type { AppRecord, QueueItem } from "@/types";
 import { useMainStore } from "@/stores/mainStore";
 
+const { t } = useI18n();
 const store = useMainStore();
 const online = useOnline();
 const TABLE_NAME = "records";
@@ -20,17 +21,19 @@ const loadRecords = async () => {
       : result.filter((r) => !r.deletedAt);
     if (!records.value.length) {
       message.value = showDeleted.value
-        ? "Nema obrisanih zapisa."
-        : "Nema zapisa.";
+        ? t("api.noDeletedRecords")
+        : t("api.noRecords");
     }
   } catch (err) {
-    message.value = "Učitavanje nije uspelo.";
+    message.value = t("api.loadingFailed");
   } finally {
     store.isLoading = false;
+    await delay(2000);
+    message.value = null;
   }
 };
 
-watch(showDeleted, loadRecords, { immediate: true });
+// watch(showDeleted, loadRecords, { immediate: true });
 
 const enqueueUpsert = async (record: AppRecord) => {
   const queued: QueueItem = {
@@ -65,10 +68,10 @@ const restoreRecord = async (record: AppRecord) => {
     } else {
       await enqueueUpsert(updated);
     }
-    message.value = "Zapis je vraćen.";
+    message.value = t("api.recordRestored");
     await loadRecords();
   } catch (err) {
-    message.value = "Vraćanje nije uspelo.";
+    message.value = t("api.recordRestoreFailed");
     if (online.value) {
       await enqueueUpsert({ ...updated, syncedAt: null });
     }
@@ -81,11 +84,11 @@ const restoreRecord = async (record: AppRecord) => {
 <template>
   <label class="flex items-center gap-2 text-sm mb-2">
     <input v-model="showDeleted" type="checkbox" />
-    Prikaži obrisane
+    {{ t("api.showDeleted") }}
   </label>
   <Button
     :icon="store.isLoading ? 'pi pi-sync pi-spin' : 'pi pi-sync'"
-    label="Refresh"
+    :label="t('words.refresh')"
     size="small"
     @click="loadRecords"
   />
@@ -104,7 +107,7 @@ const restoreRecord = async (record: AppRecord) => {
             {{ record.body }}
           </div>
           <div class="text-xs opacity-60 mt-1">
-            Deleted: {{ record.deletedAt }}
+            {{ t("words.deleted") }}: {{ record.deletedAt }}
           </div>
         </div>
         <div class="flex gap-2">
@@ -112,7 +115,7 @@ const restoreRecord = async (record: AppRecord) => {
             v-if="record.deletedAt"
             icon="pi pi-undo"
             size="small"
-            label="Restore"
+            :label="t('words.restore')"
             @click="restoreRecord(record)"
           />
         </div>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const toast = useToast();
-
+const { t } = useI18n();
 const { offline } = useOffline();
 
 watch(offline, (val) => {
@@ -11,8 +11,8 @@ watch(offline, (val) => {
     toast.add({
       group: "offlineToastGroup",
       severity: "success",
-      summary: "Online",
-      detail: "Ponovo ste povezani na mrežu.",
+      summary: t("toast.offlineToastGroup.success.summary"),
+      detail: t("toast.offlineToastGroup.success.detail"),
       life: 3000,
     });
   }
@@ -22,9 +22,8 @@ const showOfflineToast = () => {
   toast.add({
     group: "offlineToastGroup",
     severity: "warn",
-    summary: "Offline",
-    detail:
-      "Trenutno niste na mreži, srećom aplikacija može da radi offline s tim što neke funkcionalnosti možda neće biti moguće dok se ponovo ne povežete na mrežu.",
+    summary: t("toast.offlineToastGroup.warn.summary"),
+    detail: t("toast.offlineToastGroup.warn.detail"),
   });
 };
 </script>
@@ -40,8 +39,6 @@ const showOfflineToast = () => {
       @click="showOfflineToast"
     />
   </Transition>
-
-  <Toast group="offlineToastGroup" position="bottom-right" />
 </template>
 
 <style scoped>

@@ -2,6 +2,7 @@
 const { needRefresh, reloadToUpdate, dismissUpdate, showRefreshToast } =
   usePwaUpdate();
 
+const { t } = useI18n();
 const toast = useToast();
 const confirmDialog = useConfirm();
 
@@ -10,9 +11,8 @@ watch(showRefreshToast, (val) => {
     toast.add({
       group: "updatePwaToastGroup",
       severity: "warn",
-      summary: "Nova verzija aplikacije je dostupna",
-      detail:
-        "Ažurirajte odmah klikom na dugme ispod (završite trenutnu radnju jer će se aplikacija sama zatvoriti i ponovo pokrenuti) ili kasnije klikom na dugme na vrhu.",
+      summary: t("toasts.updatePwaToastGroup.warn.summary"),
+      detail: t("toasts.updatePwaToastGroup.warn.detail"),
     });
   } else {
     toast.removeGroup("updatePwaToastGroup");
@@ -21,17 +21,16 @@ watch(showRefreshToast, (val) => {
 
 const askToReloadToUpdate = () => {
   confirmDialog.require({
-    message:
-      "Da li želite da ažurirate aplikaciju? Pre toga završite trenutnu radnju jer će se aplikacija sama zatvoriti i ponovo pokrenuti.",
-    header: "Ažuriranje dostupno",
+    message: t("dialogs.updateDialogConfirm.message"),
+    header: t("dialogs.updateDialogConfirm.header"),
 
     rejectProps: {
-      label: "Kasnije",
+      label: t("dialogs.updateDialogConfirm.reject"),
       severity: "secondary",
       outlined: true,
     },
     acceptProps: {
-      label: "Ažuriraj",
+      label: t("dialogs.updateDialogConfirm.accept"),
     },
     accept: () => {
       reloadToUpdate();
@@ -48,7 +47,7 @@ onMounted(() => {
     toast.add({
       group: "successUpdateToastGroup",
       severity: "success",
-      summary: "Aplikacija je ažurirana.",
+      summary: t("toasts.updatePwaToastGroup.success.summary"),
       life: 3000,
     });
   }
@@ -64,7 +63,7 @@ onMounted(() => {
       @click="askToReloadToUpdate"
     >
       <IconMslInstallDesktopRounded class="text-xl" />
-      <span class="hidden xxs:inline">Ažuriraj</span>
+      <span class="hidden xxs:inline">{{ t("words.update") }}</span>
     </Button>
   </Transition>
 
@@ -83,14 +82,18 @@ onMounted(() => {
             <Button
               size="small"
               severity="secondary"
-              label="Kasnije"
+              :label="t('words.later')"
               @click="
                 () => {
                   dismissUpdate();
                 }
               "
             />
-            <Button size="small" label="Ažuriraj" @click="reloadToUpdate" />
+            <Button
+              size="small"
+              :label="t('words.update')"
+              @click="reloadToUpdate"
+            />
           </div>
         </div>
       </div>

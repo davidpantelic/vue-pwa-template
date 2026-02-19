@@ -15,6 +15,7 @@ const isNewer = (a?: string | null, b?: string | null) => {
 };
 
 export function useSyncDb() {
+  const { t } = useI18n();
   const store = useMainStore();
   const syncMessage = ref<string | null>(null);
   const syncing = ref(false);
@@ -75,12 +76,14 @@ export function useSyncDb() {
         await saveRecordToIndexedDb({ ...record, syncedAt: nowIso });
       }
 
-      syncMessage.value = "Sinhronizacija završena.";
+      syncMessage.value = t("api.syncSuccess");
     } catch (err) {
-      syncMessage.value = "Sinhronizacija nije uspela.";
+      syncMessage.value = t("api.syncFailed");
     } finally {
       store.isLoading = false;
       syncing.value = false;
+      await delay(2000);
+      syncMessage.value = null;
     }
   };
 

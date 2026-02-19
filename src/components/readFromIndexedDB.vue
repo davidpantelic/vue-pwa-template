@@ -2,6 +2,7 @@
 import type { AppRecord } from "@/types";
 import { useMainStore } from "@/stores/mainStore";
 
+const { t } = useI18n();
 const store = useMainStore();
 
 const records = ref<AppRecord[] | null>(null);
@@ -13,9 +14,9 @@ const readFromIndexedDB = async () => {
   try {
     const result = await listRecordsFromIndexedDb();
     records.value = result;
-    if (!result.length) readMessage.value = "Nema zapisa u IndexedDB.";
+    if (!result.length) readMessage.value = t("api.noRecords");
   } catch (err) {
-    readMessage.value = "Čitanje nije uspelo.";
+    readMessage.value = t("api.loadingFailed");
   } finally {
     store.isLoading = false;
   }
@@ -25,7 +26,7 @@ const readFromIndexedDB = async () => {
 <template>
   <Button
     :icon="store.isLoading ? 'pi pi-sync pi-spin' : 'pi pi-sync'"
-    label="Read from IndexedDB"
+    :label="t('api.readFromIDB')"
     size="small"
     @click="readFromIndexedDB"
   />
@@ -33,7 +34,6 @@ const readFromIndexedDB = async () => {
     {{ readMessage }}
   </div>
   <pre v-else-if="records" class="mt-2 text-sm whitespace-pre-wrap">
-      {{ JSON.stringify(records, null, 2) }}
-    </pre
-  >
+    {{ JSON.stringify(records, null, 2) }}
+  </pre>
 </template>

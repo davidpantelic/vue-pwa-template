@@ -13,6 +13,7 @@ const localeOptions = computed(() =>
       :options="localeOptions"
       optionLabel="label"
       optionValue="value"
+      variant="filled"
       class="flex-col w-full items-center [&>span]:w-auto! pb-2"
     >
       <template #option="slotProps">
@@ -34,7 +35,9 @@ const localeOptions = computed(() =>
         />
       </template>
       <template #header>
-        <div class="font-medium p-3">Izaberi jezik</div>
+        <div class="p-3 w-min">
+          {{ $t("words.chooseLanguage") }}
+        </div>
       </template>
     </Select>
   </div>

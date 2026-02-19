@@ -2,6 +2,7 @@
 import { useMainStore } from "@/stores/mainStore";
 import type { QueueItem } from "@/types";
 
+const { t } = useI18n();
 const store = useMainStore();
 const title = ref("");
 const body = ref("");
@@ -11,7 +12,9 @@ const online = useOnline();
 
 const writeToSupabase = async () => {
   if (!title.value.trim()) {
-    saveMessage.value = "Naslov je obavezan.";
+    saveMessage.value = t("form.validation.titleRequired");
+    await delay(2000);
+    saveMessage.value = null;
     return;
   }
 
@@ -31,7 +34,7 @@ const writeToSupabase = async () => {
         retries: 0,
       };
       await addQueueItem(queued);
-      saveMessage.value = "Sačuvano lokalno. Čeka sinhronizaciju.";
+      saveMessage.value = t("api.writeLocallySuccess");
       title.value = "";
       body.value = "";
       return;
@@ -39,14 +42,16 @@ const writeToSupabase = async () => {
     const supabase = useSupabaseClient();
     const { error } = await supabase.from(TABLE_NAME).insert(record);
     if (error) throw error;
-    saveMessage.value = "Sačuvano u Supabase.";
+    saveMessage.value = t("api.writeToSBSuccess");
     title.value = "";
     body.value = "";
   } catch (err) {
-    saveMessage.value = "Čuvanje nije uspelo.";
+    saveMessage.value = t("api.writeToDBFailed");
     console.error(err);
   } finally {
     store.isLoading = false;
+    await delay(2000);
+    saveMessage.value = null;
   }
 };
 </script>
@@ -57,21 +62,21 @@ const writeToSupabase = async () => {
       v-model="title"
       name="title"
       type="text"
-      placeholder="Title"
+      :placeholder="t('form.test.fields.title')"
       fluid
     />
     <InputText
       v-model="body"
       name="body"
       type="text"
-      placeholder="Body"
+      :placeholder="t('form.test.fields.body')"
       fluid
     />
   </div>
 
   <Button
     :icon="store.isLoading ? 'pi pi-sync pi-spin' : 'pi pi-sync'"
-    label="Write to Supabase"
+    :label="t('api.writeToSB')"
     size="small"
     @click="writeToSupabase"
   />

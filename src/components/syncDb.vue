@@ -8,11 +8,11 @@ const { syncDb, syncMessage } = useSyncDb();
 <template>
   <label class="flex items-center gap-2 text-sm mb-2">
     <input v-model="store.autoSyncOnReconnect" type="checkbox" />
-    Auto-sync on reconnect
+    {{ $t("api.syncOnReconnect") }}
   </label>
   <Button
     :icon="store.isLoading ? 'pi pi-sync pi-spin' : 'pi pi-sync'"
-    label="Sync DB"
+    :label="$t('api.syncDb')"
     size="small"
     @click="syncDb"
   />

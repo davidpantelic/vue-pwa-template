@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const toast = useToast();
+const { t } = useI18n();
 
 const {
   canPromptInstall,
@@ -26,9 +27,8 @@ const showInstallToast = () => {
   toast.add({
     group: "installToastGroup",
     severity: "secondary",
-    summary: "Instalirajte aplikaciju",
-    detail:
-      "Možete instalirati aplikaciju na svoj uređaj kako biste imali brži pristup i više mogućnosti.",
+    summary: t("toasts.installToastGroup.secondary.summary"),
+    detail: t("toasts.installToastGroup.secondary.detail"),
   });
   isInstallToastVisible.value = true;
 };
@@ -63,9 +63,8 @@ async function onInstallClick() {
     toast.add({
       group: "successInstallToastGroup",
       severity: "success",
-      summary: "Instalacija u toku...",
-      detail:
-        "Aplikacija će biti instalirana za par trenutaka i nakon toga je možete otvoriti sa početnog ekrana.",
+      summary: t("toasts.installToastGroup.success.summary"),
+      detail: t("toasts.installToastGroup.success.detail"),
       life: 6000,
     });
   }
@@ -120,9 +119,9 @@ const hideInstallButtonManually = () => {
       @click="onInstallClick"
     >
       <IconMslInstallDesktopRounded class="text-xl" />
-      <span v-if="!installButtonClicked" class="hidden xxs:inline"
-        >Instaliraj</span
-      >
+      <span v-if="!installButtonClicked" class="hidden xxs:inline">{{
+        t("words.install")
+      }}</span>
     </Button>
   </Transition>
 
@@ -145,11 +144,15 @@ const hideInstallButtonManually = () => {
             <Button
               size="small"
               severity="secondary"
-              label="Ne sad"
+              :label="t('words.notNow')"
               outlined
               @click="onCancelClick"
             />
-            <Button size="small" label="Instaliraj" @click="onInstallClick" />
+            <Button
+              size="small"
+              :label="t('words.install')"
+              @click="onInstallClick"
+            />
           </div>
         </div>
       </div>
@@ -165,29 +168,26 @@ const hideInstallButtonManually = () => {
     header="Instalacija nije moguća u trenutnom pretraživaču."
   >
     <div class="flex flex-col gap-3 [&>p]:text-justify">
+      <i18n-t keypath="dialogs.installFailed.text1" tag="p">
+        <strong>{{ $t("words.install") }}</strong>
+      </i18n-t>
       <p>
-        Da biste instalirali aplikaciju na svoj uređaj, otvorite link u Google
-        Chrome pretraživaču a zatim kliknite na <b>Instaliraj</b> dugme.
-      </p>
-      <p>
-        Klikom na dugme ispod možete kopirate link aplikacije a zatim ga
-        zalepiti u Google Chrome pretraživač.
+        {{ t("dialogs.installFailed.text2") }}
       </p>
       <Button
         size="small"
-        :label="!copied ? 'Kopiraj link' : 'Link kopiran'"
+        :label="!copied ? t('words.copyLink') : t('words.linkCopied')"
         :icon="!copied ? 'pi pi-copy' : 'pi pi-check'"
         :disabled="copied"
         icon-pos="right"
         @click="copyAppLink"
       />
       <p>
-        Svakako možete nastaviti da koristite aplikaciju i bez instaliranja. Ako
-        želite, klikom na dugme ispod, možete skloniti "Instaliraj" dugme.
+        {{ t("dialogs.installFailed.text3") }}
       </p>
       <Button
         size="small"
-        label="Skloni dugme"
+        :label="t('words.hideButton')"
         @click="hideInstallButtonManually"
       />
     </div>
