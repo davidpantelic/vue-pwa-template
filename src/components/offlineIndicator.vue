@@ -2,8 +2,13 @@
 const toast = useToast();
 const { t } = useI18n();
 const { offline } = useOffline();
+const offlineToastDisplayed = ref(false);
 
 watch(offline, (val) => {
+  offlineToastDisplayed.value =
+    sessionStorage.getItem("offline_toast_displayed") === "true";
+  if (offlineToastDisplayed.value) return;
+
   if (val) {
     showOfflineToast();
   } else {
@@ -15,6 +20,7 @@ watch(offline, (val) => {
       detail: t("toasts.offlineToastGroup.success.detail"),
       life: 3000,
     });
+    sessionStorage.setItem("offline_toast_displayed", "true");
   }
 });
 
@@ -24,6 +30,7 @@ const showOfflineToast = () => {
     severity: "warn",
     summary: t("toasts.offlineToastGroup.warn.summary"),
     detail: t("toasts.offlineToastGroup.warn.detail"),
+    life: 10000,
   });
 };
 </script>
