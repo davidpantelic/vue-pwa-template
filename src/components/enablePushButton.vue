@@ -1,11 +1,9 @@
 <script setup lang="ts">
-import { useMainStore } from "@/stores/mainStore";
-
 const { t } = useI18n();
 const toast = useToast();
-const store = useMainStore();
 const notificationsEnabled = ref(false);
 const TABLE_NAME = "push_subscriptions";
+const isLoading = ref(false);
 
 const urlBase64ToUint8Array = (base64String: string) => {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
@@ -55,7 +53,7 @@ const enablePush = async () => {
     return;
   }
 
-  store.isLoading = true;
+  isLoading.value = true;
   try {
     if (Notification.permission === "denied") {
       toast.add({
@@ -130,7 +128,7 @@ const enablePush = async () => {
     });
     notificationsEnabled.value = false;
   } finally {
-    store.isLoading = false;
+    isLoading.value = false;
   }
 };
 
@@ -154,7 +152,7 @@ onMounted(async () => {
     :icon="
       notificationsEnabled
         ? 'pi pi-bell'
-        : store.isLoading
+        : isLoading
           ? 'pi pi-sync pi-spin'
           : 'pi pi-bell-slash'
     "

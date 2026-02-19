@@ -1,16 +1,14 @@
 <script setup lang="ts">
-import { useMainStore } from "@/stores/mainStore";
-
 const { t } = useI18n();
-const store = useMainStore();
 const sendMessage = ref<string | null>(null);
 const pushTitle = ref("Test");
 const pushBody = ref("Test");
 const pushUrl = ref("/");
+const isLoading = ref(false);
 
 const sendTestPush = async () => {
   sendMessage.value = null;
-  store.isLoading = true;
+  isLoading.value = true;
   try {
     const supabase = useSupabaseClient();
     const { error } = await supabase.functions.invoke("send-push", {
@@ -28,7 +26,7 @@ const sendTestPush = async () => {
   } catch (err) {
     sendMessage.value = t("form.test.message.error");
   } finally {
-    store.isLoading = false;
+    isLoading.value = false;
   }
 };
 </script>
@@ -54,7 +52,7 @@ const sendTestPush = async () => {
     </div>
     <Button
       class="mt-2"
-      :icon="store.isLoading ? 'pi pi-sync pi-spin' : 'pi pi-send'"
+      :icon="isLoading ? 'pi pi-sync pi-spin' : 'pi pi-send'"
       :label="t('form.test.fields.button')"
       @click="sendTestPush"
     />

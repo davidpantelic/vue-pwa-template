@@ -1,15 +1,13 @@
 <script setup lang="ts">
 import type { AppRecord } from "@/types";
-import { useMainStore } from "@/stores/mainStore";
 
 const { t } = useI18n();
-const store = useMainStore();
-
 const records = ref<AppRecord[] | null>(null);
 const readMessage = ref<string | null>(null);
+const isLoading = ref(false);
 
 const readFromIndexedDB = async () => {
-  store.isLoading = true;
+  isLoading.value = true;
   readMessage.value = null;
   try {
     const result = await listRecordsFromIndexedDb();
@@ -18,7 +16,7 @@ const readFromIndexedDB = async () => {
   } catch (err) {
     readMessage.value = t("api.loadingFailed");
   } finally {
-    store.isLoading = false;
+    isLoading.value = false;
     await delay(2000);
     readMessage.value = null;
   }
@@ -27,7 +25,7 @@ const readFromIndexedDB = async () => {
 
 <template>
   <Button
-    :icon="store.isLoading ? 'pi pi-sync pi-spin' : 'pi pi-sync'"
+    :icon="isLoading ? 'pi pi-sync pi-spin' : 'pi pi-sync'"
     :label="t('api.readFromIDB')"
     size="small"
     @click="readFromIndexedDB"
@@ -35,7 +33,10 @@ const readFromIndexedDB = async () => {
   <div v-if="readMessage" class="mt-2 text-sm opacity-80">
     {{ readMessage }}
   </div>
-  <pre v-else-if="records" class="mt-2 text-sm whitespace-pre-wrap">
+  <pre
+    v-else-if="(records?.length ?? 0) > 0"
+    class="mt-2 text-sm whitespace-pre-wrap"
+  >
     {{ JSON.stringify(records, null, 2) }}
   </pre>
 </template>

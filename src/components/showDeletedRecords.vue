@@ -1,18 +1,16 @@
 <script setup lang="ts">
 import type { AppRecord, QueueItem } from "@/types";
-import { useMainStore } from "@/stores/mainStore";
 
 const { t } = useI18n();
-const store = useMainStore();
 const online = useOnline();
 const TABLE_NAME = "records";
-
 const showDeleted = ref(true);
 const records = ref<AppRecord[]>([]);
 const message = ref<string | null>(null);
+const isLoading = ref(false);
 
 const loadRecords = async () => {
-  store.isLoading = true;
+  isLoading.value = true;
   message.value = null;
   try {
     const result = await listRecordsFromIndexedDb();
@@ -27,7 +25,7 @@ const loadRecords = async () => {
   } catch (err) {
     message.value = t("api.loadingFailed");
   } finally {
-    store.isLoading = false;
+    isLoading.value = false;
     await delay(2000);
     message.value = null;
   }
@@ -47,7 +45,7 @@ const enqueueUpsert = async (record: AppRecord) => {
 };
 
 const restoreRecord = async (record: AppRecord) => {
-  store.isLoading = true;
+  isLoading.value = true;
   message.value = null;
   const nowIso = new Date().toISOString();
   const updated: AppRecord = {
@@ -76,7 +74,7 @@ const restoreRecord = async (record: AppRecord) => {
       await enqueueUpsert({ ...updated, syncedAt: null });
     }
   } finally {
-    store.isLoading = false;
+    isLoading.value = false;
   }
 };
 </script>
@@ -87,7 +85,7 @@ const restoreRecord = async (record: AppRecord) => {
     {{ t("api.showDeleted") }}
   </label>
   <Button
-    :icon="store.isLoading ? 'pi pi-sync pi-spin' : 'pi pi-sync'"
+    :icon="isLoading ? 'pi pi-sync pi-spin' : 'pi pi-sync'"
     :label="t('words.refresh')"
     size="small"
     @click="loadRecords"

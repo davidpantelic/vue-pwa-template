@@ -1,12 +1,9 @@
 <script setup lang="ts">
-import { useMainStore } from "@/stores/mainStore";
-
 const { t } = useI18n();
-const store = useMainStore();
-
 const title = ref("");
 const body = ref("");
 const saveMessage = ref<string | null>(null);
+const isLoading = ref(false);
 
 const writeToIndexedDB = async () => {
   if (!title.value.trim()) {
@@ -16,7 +13,7 @@ const writeToIndexedDB = async () => {
     return;
   }
 
-  store.isLoading = true;
+  isLoading.value = true;
   saveMessage.value = null;
   try {
     const record = createRecord({
@@ -30,7 +27,7 @@ const writeToIndexedDB = async () => {
   } catch (err) {
     saveMessage.value = t("api.writeToDBFailed");
   } finally {
-    store.isLoading = false;
+    isLoading.value = false;
     await delay(2000);
     saveMessage.value = null;
   }
@@ -56,7 +53,7 @@ const writeToIndexedDB = async () => {
   </div>
 
   <Button
-    :icon="store.isLoading ? 'pi pi-sync pi-spin' : 'pi pi-sync'"
+    :icon="isLoading ? 'pi pi-sync pi-spin' : 'pi pi-sync'"
     :label="t('api.writeToIDB')"
     size="small"
     @click="writeToIndexedDB"

@@ -1,14 +1,13 @@
 <script setup lang="ts">
-import { useMainStore } from "@/stores/mainStore";
 import type { QueueItem } from "@/types";
 
 const { t } = useI18n();
-const store = useMainStore();
 const title = ref("");
 const body = ref("");
 const saveMessage = ref<string | null>(null);
 const TABLE_NAME = "records";
 const online = useOnline();
+const isLoading = ref(false);
 
 const writeToSupabase = async () => {
   if (!title.value.trim()) {
@@ -18,7 +17,7 @@ const writeToSupabase = async () => {
     return;
   }
 
-  store.isLoading = true;
+  isLoading.value = true;
   saveMessage.value = null;
   try {
     const record = createRecord({
@@ -49,7 +48,7 @@ const writeToSupabase = async () => {
     saveMessage.value = t("api.writeToDBFailed");
     console.error(err);
   } finally {
-    store.isLoading = false;
+    isLoading.value = false;
     await delay(2000);
     saveMessage.value = null;
   }
@@ -75,7 +74,7 @@ const writeToSupabase = async () => {
   </div>
 
   <Button
-    :icon="store.isLoading ? 'pi pi-sync pi-spin' : 'pi pi-sync'"
+    :icon="isLoading ? 'pi pi-sync pi-spin' : 'pi pi-sync'"
     :label="t('api.writeToSB')"
     size="small"
     @click="writeToSupabase"

@@ -35,7 +35,7 @@ This is a Progressive Web App (PWA) built with Vue 3, TypeScript, and Vite. The 
 
 ## Tech Stack
 
-- **Frontend Framework:** Vue 3 (Composition API with)
+- **Frontend Framework:** Vue 3
 - **Backend:** Supabase
 - **Language:** JavaScript/TypeScript
 - **Build Tool:** Vite
@@ -44,7 +44,7 @@ This is a Progressive Web App (PWA) built with Vue 3, TypeScript, and Vite. The 
 - **Package Manager:** npm / pnpm
 - **Internationalization** - i18n
 - **PWA Support:** Service Workers, Web App Manifest
-- **State Management:** [Pinia / Context API - adjust as needed]
+- **State Management:** Pinia
 - **Testing:** Vitest
 
 ## Requirements

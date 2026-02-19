@@ -1,20 +1,18 @@
 <script setup lang="ts">
 import type { AppRecord, QueueItem } from "@/types";
-import { useMainStore } from "@/stores/mainStore";
 
 const { t } = useI18n();
-const store = useMainStore();
 const online = useOnline();
 const TABLE_NAME = "records";
-
 const records = ref<AppRecord[]>([]);
 const message = ref<string | null>(null);
 const editingId = ref<string | null>(null);
 const editTitle = ref("");
 const editBody = ref("");
+const isLoading = ref(false);
 
 const loadRecords = async () => {
-  store.isLoading = true;
+  isLoading.value = true;
   message.value = null;
   try {
     const result = await listRecordsFromIndexedDb();
@@ -23,7 +21,7 @@ const loadRecords = async () => {
   } catch (err) {
     message.value = t("api.loadingFailed");
   } finally {
-    store.isLoading = false;
+    isLoading.value = false;
   }
 };
 
@@ -58,7 +56,7 @@ const saveEdit = async (record: AppRecord) => {
     return;
   }
 
-  store.isLoading = true;
+  isLoading.value = true;
   message.value = null;
   const nowIso = new Date().toISOString();
   const updated: AppRecord = {
@@ -90,12 +88,12 @@ const saveEdit = async (record: AppRecord) => {
       await enqueueUpsert({ ...updated, syncedAt: null });
     }
   } finally {
-    store.isLoading = false;
+    isLoading.value = false;
   }
 };
 
 const softDelete = async (record: AppRecord) => {
-  store.isLoading = true;
+  isLoading.value = true;
   message.value = null;
   const nowIso = new Date().toISOString();
   const updated: AppRecord = {
@@ -126,7 +124,7 @@ const softDelete = async (record: AppRecord) => {
       await enqueueUpsert({ ...updated, syncedAt: null });
     }
   } finally {
-    store.isLoading = false;
+    isLoading.value = false;
   }
 };
 </script>
@@ -134,7 +132,7 @@ const softDelete = async (record: AppRecord) => {
 <template>
   <div class="flex items-center gap-2">
     <Button
-      :icon="store.isLoading ? 'pi pi-sync pi-spin' : 'pi pi-sync'"
+      :icon="isLoading ? 'pi pi-sync pi-spin' : 'pi pi-sync'"
       :label="$t('words.refresh')"
       size="small"
       @click="loadRecords"
