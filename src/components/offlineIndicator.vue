@@ -11,8 +11,8 @@ watch(offline, (val) => {
     toast.add({
       group: "offlineToastGroup",
       severity: "success",
-      summary: t("toast.offlineToastGroup.success.summary"),
-      detail: t("toast.offlineToastGroup.success.detail"),
+      summary: t("toasts.offlineToastGroup.success.summary"),
+      detail: t("toasts.offlineToastGroup.success.detail"),
       life: 3000,
     });
   }
@@ -22,8 +22,8 @@ const showOfflineToast = () => {
   toast.add({
     group: "offlineToastGroup",
     severity: "warn",
-    summary: t("toast.offlineToastGroup.warn.summary"),
-    detail: t("toast.offlineToastGroup.warn.detail"),
+    summary: t("toasts.offlineToastGroup.warn.summary"),
+    detail: t("toasts.offlineToastGroup.warn.detail"),
   });
 };
 </script>
