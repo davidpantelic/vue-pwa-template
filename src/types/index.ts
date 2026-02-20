@@ -36,3 +36,8 @@ export type QueueItem = {
   createdAt: string;
   retries: number;
 };
+
+export type userLoginCredentials = {
+  email: string;
+  password: string;
+};

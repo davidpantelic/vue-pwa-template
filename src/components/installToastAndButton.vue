@@ -168,7 +168,7 @@ const hideInstallButtonManually = () => {
     header="Instalacija nije moguća u trenutnom pretraživaču."
   >
     <div class="flex flex-col gap-3 [&>p]:text-justify">
-      <i18n-t keypath="dialogs.installFailed.text1" tag="p">
+      <i18n-t scope="global" keypath="dialogs.installFailed.text1" tag="p">
         <strong>{{ $t("words.install") }}</strong>
       </i18n-t>
       <p>

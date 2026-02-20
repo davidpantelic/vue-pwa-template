@@ -49,7 +49,7 @@ const openLink = (url: string) => {
             <p>
               {{ $t("aboutAppInstall.text2") }}
             </p>
-            <i18n-t keypath="aboutAppInstall.text2" tag="p">
+            <i18n-t scope="global" keypath="aboutAppInstall.text2" tag="p">
               <strong>{{ $t("words.install") }}</strong>
             </i18n-t>
             <p>
@@ -87,7 +87,7 @@ const openLink = (url: string) => {
                 class="p-1.5! rounded-md! [&>span]:text-sm! [&>span]:inline-flex! [&>span]:items-center [&>span]:justify-center"
               />, {{ $t("aboutNotifications.text2") }}
             </p>
-            <i18n-t keypath="aboutNotifications.text3" tag="p">
+            <i18n-t scope="global" keypath="aboutNotifications.text3" tag="p">
               <i>{{ $t("aboutNotifications.selectAppUrl") }}</i>
             </i18n-t>
           </div>

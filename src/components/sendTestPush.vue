@@ -1,19 +1,39 @@
 <script setup lang="ts">
 const { t } = useI18n();
+const toast = useToast();
 const sendMessage = ref<string | null>(null);
 const pushTitle = ref("Test");
 const pushBody = ref("Test");
 const pushUrl = ref("/");
 const isLoading = ref(false);
+const supabase = useSupabaseClient();
 
 const sendTestPush = async () => {
   sendMessage.value = null;
   isLoading.value = true;
+
   try {
-    const supabase = useSupabaseClient();
+    const {
+      data: { session },
+      error: sessionError,
+    } = await supabase.auth.getSession();
+
+    if (!session || sessionError) {
+      toast.add({
+        group: "userSignToastGroup",
+        severity: "warn",
+        summary: t("words.login"),
+        detail: t("form.message.loggedRequired"),
+        life: 3000,
+      });
+      isLoading.value = false;
+      return;
+    }
+
+    // use access_token from session
     const { error } = await supabase.functions.invoke("send-push", {
       headers: {
-        Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        Authorization: `Bearer ${session.access_token}`,
       },
       body: {
         title: pushTitle.value,
@@ -21,10 +41,12 @@ const sendTestPush = async () => {
         url: pushUrl.value,
       },
     });
+
     if (error) throw error;
     sendMessage.value = t("form.message.success");
   } catch (err) {
     sendMessage.value = t("form.message.error");
+    console.error(err);
   } finally {
     isLoading.value = false;
   }

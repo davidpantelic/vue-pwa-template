@@ -1,9 +1,11 @@
 <script setup lang="ts">
 const { t } = useI18n();
 const toast = useToast();
+const supabase = useSupabaseClient();
 const notificationsEnabled = ref(false);
 const TABLE_NAME = "push_subscriptions";
 const isLoading = ref(false);
+const session = ref<any>(null);
 
 const urlBase64ToUint8Array = (base64String: string) => {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
@@ -13,12 +15,16 @@ const urlBase64ToUint8Array = (base64String: string) => {
 };
 
 const saveSubscription = async (subscription: PushSubscription) => {
-  const supabase = useSupabaseClient();
+  if (!session.value?.user?.id) {
+    throw new Error("User not authenticated");
+  }
+  const user = session.value.user;
   const json = subscription.toJSON();
   const { endpoint, keys } = json;
   const { error } = await supabase.from(TABLE_NAME).upsert(
     {
       endpoint,
+      user_id: user.id,
       p256dh: keys?.p256dh ?? null,
       auth: keys?.auth ?? null,
       subscription: json,
@@ -30,6 +36,29 @@ const saveSubscription = async (subscription: PushSubscription) => {
 };
 
 const enablePush = async () => {
+  isLoading.value = true;
+
+  try {
+    const {
+      data: { session },
+      error: sessionError,
+    } = await supabase.auth.getSession();
+
+    if (!session || sessionError) {
+      toast.add({
+        group: "userSignToastGroup",
+        severity: "warn",
+        summary: t("words.login"),
+        detail: t("form.message.loggedRequired"),
+        life: 3000,
+      });
+      isLoading.value = false;
+      return;
+    }
+  } finally {
+    isLoading.value = false;
+  }
+
   if (!("serviceWorker" in navigator)) {
     console.error("Service Worker nije podržan.");
     toast.add({
@@ -133,6 +162,12 @@ const enablePush = async () => {
 };
 
 onMounted(async () => {
+  // get current session
+  const {
+    data: { session: currentSession },
+  } = await supabase.auth.getSession();
+  session.value = currentSession;
+
   if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
     notificationsEnabled.value = false;
     return;

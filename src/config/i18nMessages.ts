@@ -173,6 +173,7 @@ export const messages = {
         loginSuccess: "Uspešna prijava",
         logoutFailed: "Odjava nije uspela",
         logoutSuccess: "Uspešna odjava",
+        loggedRequired: "Morate biti prijavljeni",
       },
       validation: {
         titleRequired: "Naslov je obavezan",
@@ -393,6 +394,7 @@ export const messages = {
         loginSuccess: "Successful login",
         logoutFailed: "Logout failed",
         logoutSuccess: "Successful logout",
+        loggedRequired: "You must be logged in",
       },
       validation: {
         titleRequired: "Title is required",

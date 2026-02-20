@@ -1,40 +1,18 @@
 <script setup lang="ts">
 import { zodResolver } from "@primevue/forms/resolvers/zod";
 import { z } from "zod";
-
-interface ProfileFormData {
-  email: string;
-  password: string;
-}
+import { useUserSession } from "../stores/userSession";
+import type { userLoginCredentials } from "@/types";
 
 const { t, locale } = useI18n();
-const toast = useToast();
 const profileDialogShow = ref<boolean>(false);
-const isLoading = ref(false);
-const supabase = useSupabaseClient();
-
-const session = ref<any | null>(null);
-
-const checkSession = async () => {
-  try {
-    const { data, error } = await supabase.auth.getSession();
-    if (error) {
-      console.error(error);
-      session.value = null;
-      return;
-    }
-    session.value = data.session ?? null;
-  } catch (err) {
-    console.error(err);
-    session.value = null;
-  }
-};
+const userSessionStore = useUserSession();
 
 onMounted(() => {
-  checkSession();
+  userSessionStore.checkSession();
 });
 
-const initialValues = ref<ProfileFormData>({
+const initialValues = ref<userLoginCredentials>({
   email: "",
   password: "",
 });
@@ -65,82 +43,9 @@ const onFormSubmit = async (e: any): Promise<void> => {
   // e.reset: A function that resets the form to its initial state.
 
   if (e.valid) {
-    isLoading.value = true;
-
     // console.log(e);
 
-    try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email: e.values.email,
-        password: e.values.password,
-      });
-
-      if (error) {
-        toast.add({
-          group: "userSignToastGroup",
-          severity: "error",
-          summary: t("form.message.loginFailed"),
-          detail: error.message,
-          life: 3000,
-        });
-        return;
-      }
-
-      toast.add({
-        group: "userSignToastGroup",
-        severity: "success",
-        summary: t("form.message.loginSuccess"),
-        life: 3000,
-      });
-
-      await checkSession();
-      // profileDialogShow.value = false;
-    } catch (err) {
-      toast.add({
-        group: "userSignToastGroup",
-        severity: "error",
-        summary: t("form.message.loginFailed"),
-        detail: String(err),
-        life: 3000,
-      });
-    } finally {
-      isLoading.value = false;
-    }
-  }
-};
-
-const logOut = async () => {
-  isLoading.value = true;
-  try {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      toast.add({
-        group: "userSignToastGroup",
-        severity: "error",
-        summary: t("form.message.logoutFailed"),
-        detail: error.message,
-        life: 3000,
-      });
-      return;
-    }
-    await checkSession();
-    toast.add({
-      group: "userSignToastGroup",
-      severity: "success",
-      summary: t("form.message.logoutSuccess"),
-      life: 3000,
-    });
-    profileDialogShow.value = false;
-  } catch (err) {
-    toast.add({
-      group: "userSignToastGroup",
-      severity: "error",
-      summary: t("form.message.logoutFailed"),
-      detail: String(err),
-      life: 3000,
-    });
-  } finally {
-    isLoading.value = false;
+    await userSessionStore.logWithPass(e.values);
   }
 };
 </script>
@@ -148,15 +53,18 @@ const logOut = async () => {
 <template>
   <Button
     icon="pi pi-user"
-    :severity="session ? 'primary' : 'secondary'"
+    :severity="userSessionStore.session ? 'primary' : 'secondary'"
     size="large"
     @click="profileDialogShow = true"
   />
 
   <Dialog v-model:visible="profileDialogShow" modal :header="$t('words.login')">
-    <div v-if="session" class="flex flex-col gap-3">
+    <div v-if="userSessionStore.session" class="flex flex-col gap-3">
       <div class="font-medium">
-        {{ session.user?.email || session.user?.id }}
+        {{
+          userSessionStore.session.user?.email ||
+          userSessionStore.session.user?.id
+        }}
       </div>
       <div class="flex gap-2">
         <!-- <Button
@@ -169,14 +77,18 @@ const logOut = async () => {
           type="button"
           severity="danger"
           :label="t('words.logout')"
-          :icon="isLoading ? 'pi pi-spin pi-spinner' : 'pi pi-sign-out'"
-          @click="logOut"
+          :icon="
+            userSessionStore.isLoading
+              ? 'pi pi-spin pi-spinner'
+              : 'pi pi-sign-out'
+          "
+          @click="userSessionStore.logOut"
         />
       </div>
     </div>
 
     <Form
-      v-if="!session"
+      v-if="!userSessionStore.session"
       v-slot="$form"
       :initialValues
       :resolver="resolverRef"
@@ -225,7 +137,9 @@ const logOut = async () => {
         type="submit"
         severity="secondary"
         :label="t('words.login')"
-        :icon="isLoading ? 'pi pi-spinner pi-spin' : 'pi pi-sign-in'"
+        :icon="
+          userSessionStore.isLoading ? 'pi pi-spinner pi-spin' : 'pi pi-sign-in'
+        "
         iconPos="right"
       />
     </Form>
