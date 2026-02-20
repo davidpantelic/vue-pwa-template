@@ -176,6 +176,8 @@ export const messages = {
         registerSuccessMessage:
           "Da biste završili registraciju, verifikujte svoju email adresu klikom na link koji vam je poslat na email.",
         registerFailed: "Registracija nije uspela",
+        registerFailedEmailRateLimit:
+          "Poslato je previše zahteva za email. Sačekajte nekoliko minuta pa pokušajte ponovo",
         loginFailed: "Prijava nije uspela",
         loginFailedWrongCredentials: "Netačni podaci za prijavu",
         loginFailedUnverifiedEmail:
@@ -194,6 +196,10 @@ export const messages = {
         passwordMismatch: "Lozinke se ne poklapaju",
         passwordMinLength: "Lozinka mora imati najmanje 6 karaktera",
       },
+    },
+    authConfirmation: {
+      title: "Email adresa je verifikovana",
+      text: "Verifikacija je uspešna. Ako je ovaj link otvoren u pretraživaču umesto u aplikaciji, vratite se u aplikaciju i nastavite sa prijavom.",
     },
     aboutTitle: "Pomoć",
     aboutAppInstall: {
@@ -410,6 +416,8 @@ export const messages = {
         registerSuccessMessage:
           "To complete registration, please verify your email address by clicking the link sent to your email.",
         registerFailed: "Registration failed",
+        registerFailedEmailRateLimit:
+          "Too many email requests. Please wait a few minutes and try again",
         loginFailed: "Login failed",
         loginFailedWrongCredentials: "Incorrect login information",
         loginFailedUnverifiedEmail:
@@ -428,6 +436,10 @@ export const messages = {
         passwordMismatch: "Passwords do not match",
         passwordMinLength: "Password must be at least 6 characters",
       },
+    },
+    authConfirmation: {
+      title: "Email verified",
+      text: "Your email has been verified successfully. If this link opened in a browser instead of the app, please return to the app and continue with login.",
     },
     aboutTitle: "Help",
     aboutAppInstall: {

@@ -19,6 +19,15 @@ watch(
     selectedUserForm.value = userForms.value[0];
   },
 );
+
+watch(
+  () => userSessionStore.session,
+  (newSession) => {
+    if (newSession) {
+      profileDialogShow.value = false;
+    }
+  },
+);
 </script>
 
 <template>

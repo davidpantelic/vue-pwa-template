@@ -37,6 +37,13 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    '/auth-confirmation': RouteRecordInfo<
+      '/auth-confirmation',
+      '/auth-confirmation',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
     '/test': RouteRecordInfo<
       '/test',
       '/test',
@@ -66,6 +73,12 @@ declare module 'vue-router/auto-routes' {
     'src/pages/about.vue': {
       routes:
         | '/about'
+      views:
+        | never
+    }
+    'src/pages/auth-confirmation.vue': {
+      routes:
+        | '/auth-confirmation'
       views:
         | never
     }

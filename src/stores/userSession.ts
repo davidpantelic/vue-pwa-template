@@ -5,7 +5,7 @@ export const useUserSession = defineStore("userSession", () => {
   const supabase = useSupabaseClient();
   const session = ref<any | null>(null);
   const sessionError = ref<any | null>(null);
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const toast = useToast();
   let unsub: (() => void) | null = null;
 
@@ -56,19 +56,25 @@ export const useUserSession = defineStore("userSession", () => {
       const { data, error } = await supabase.auth.signUp({
         email: credentials.email,
         password: credentials.password,
-        // options: {
-        //   emailRedirectTo: "https://example.com/welcome",
-        // },
+        options: {
+          data: { lang: locale.value }, // "en" / "sr"
+          emailRedirectTo: `${import.meta.env.VITE_APP_URL}auth-confirmation`,
+        },
       });
 
       console.log(data);
 
       if (error) {
+        const errorTranslated = computed(() => {
+          if (error.code === "over_email_send_rate_limit")
+            return t("form.message.registerFailedEmailRateLimit");
+        });
+
         toast.add({
           group: "userSignToastGroup",
           severity: "warn",
           summary: t("form.message.registerFailed"),
-          detail: error.message,
+          detail: errorTranslated,
           life: 3000,
         });
         return false;
@@ -96,7 +102,9 @@ export const useUserSession = defineStore("userSession", () => {
     }
   };
 
-  const logWithPass = async (credentials: userLoginCredentials) => {
+  const logWithPass = async (
+    credentials: userLoginCredentials,
+  ): Promise<boolean> => {
     isLoading.value = true;
     try {
       const { error } = await supabase.auth.signInWithPassword({
@@ -120,7 +128,7 @@ export const useUserSession = defineStore("userSession", () => {
           detail: errorTranslated,
           life: 5000,
         });
-        return;
+        return false;
       }
 
       toast.add({
@@ -129,6 +137,7 @@ export const useUserSession = defineStore("userSession", () => {
         summary: t("form.message.loginSuccess"),
         life: 3000,
       });
+      return true;
 
       await checkSession();
     } catch (err) {
@@ -139,6 +148,7 @@ export const useUserSession = defineStore("userSession", () => {
         detail: String(err),
         life: 3000,
       });
+      return false;
     } finally {
       isLoading.value = false;
     }
@@ -214,10 +224,20 @@ export const useUserSession = defineStore("userSession", () => {
 
   const initAuthListener = () => {
     if (unsub) return;
+
     const { data } = supabase.auth.onAuthStateChange((_event, newSession) => {
-      session.value = newSession;
-      sessionError.value = null;
+      if (!newSession) {
+        session.value = null;
+        sessionError.value = null;
+        return;
+      }
+
+      // Do not await inside auth callback
+      setTimeout(() => {
+        void checkSession();
+      }, 0);
     });
+
     unsub = () => data.subscription.unsubscribe();
   };
 

@@ -31,7 +31,10 @@ const onFormSubmit = async (e: any): Promise<void> => {
   if (e.valid) {
     // console.log(e);
 
-    await userSessionStore.logWithPass(e.values);
+    const isSuccess = await userSessionStore.logWithPass(e.values);
+    if (isSuccess) {
+      // e.reset();
+    }
   }
 };
 
