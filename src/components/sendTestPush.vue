@@ -1,24 +1,22 @@
 <script setup lang="ts">
-const { t } = useI18n();
-const toast = useToast();
+import { useUserSession } from "@/stores/userSession";
+
+const userSessionStore = useUserSession();
 const sendMessage = ref<string | null>(null);
-const pushTitle = ref("Test");
-const pushBody = ref("Test");
+const pushTitle = ref("Test notification");
+const pushBody = ref("Hello from Webdak PWA");
 const pushUrl = ref("/");
-const isLoading = ref(false);
+const toast = useToast();
+const { t } = useI18n();
 const supabase = useSupabaseClient();
 
 const sendTestPush = async () => {
   sendMessage.value = null;
-  isLoading.value = true;
-
+  userSessionStore.isLoading = true;
   try {
-    const {
-      data: { session },
-      error: sessionError,
-    } = await supabase.auth.getSession();
+    userSessionStore.checkSession();
 
-    if (!session || sessionError) {
+    if (!userSessionStore.session || userSessionStore.sessionError) {
       toast.add({
         group: "userSignToastGroup",
         severity: "warn",
@@ -26,15 +24,13 @@ const sendTestPush = async () => {
         detail: t("form.message.loggedRequired"),
         life: 3000,
       });
-      isLoading.value = false;
+      userSessionStore.isLoading = false;
       return;
     }
-
-    // use access_token from session
     const { error } = await supabase.functions.invoke("send-push", {
-      headers: {
-        Authorization: `Bearer ${session.access_token}`,
-      },
+      // headers: {
+      //   Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+      // },
       body: {
         title: pushTitle.value,
         body: pushBody.value,
@@ -48,7 +44,7 @@ const sendTestPush = async () => {
     sendMessage.value = t("form.message.error");
     console.error(err);
   } finally {
-    isLoading.value = false;
+    userSessionStore.isLoading = false;
   }
 };
 </script>
@@ -70,7 +66,9 @@ const sendTestPush = async () => {
     </div>
     <Button
       class="mt-2"
-      :icon="isLoading ? 'pi pi-spinner pi-spin' : 'pi pi-send'"
+      :icon="
+        userSessionStore.isLoading ? 'pi pi-spinner pi-spin' : 'pi pi-send'
+      "
       :label="t('form.fields.button')"
       @click="sendTestPush"
     />

@@ -4,6 +4,7 @@ export const useUserSession = defineStore("userSession", () => {
   const isLoading = ref(false);
   const supabase = useSupabaseClient();
   const session = ref<any | null>(null);
+  const sessionError = ref<any | null>(null);
   const { t } = useI18n();
   const toast = useToast();
 
@@ -13,6 +14,7 @@ export const useUserSession = defineStore("userSession", () => {
       if (error) {
         console.error(error);
         session.value = null;
+        sessionError.value = error;
         return;
       }
       session.value = data.session ?? null;
@@ -96,5 +98,13 @@ export const useUserSession = defineStore("userSession", () => {
     }
   };
 
-  return { isLoading, supabase, checkSession, session, logWithPass, logOut };
+  return {
+    isLoading,
+    supabase,
+    checkSession,
+    session,
+    sessionError,
+    logWithPass,
+    logOut,
+  };
 });
