@@ -55,14 +55,21 @@ const sendTestPush = async () => {
       <InputText
         v-model="pushTitle"
         :placeholder="t('form.fields.title')"
+        maxlength="50"
         fluid
       />
       <InputText
         v-model="pushBody"
         :placeholder="t('form.fields.body')"
+        maxlength="200"
         fluid
       />
-      <InputText v-model="pushUrl" :placeholder="t('form.fields.url')" fluid />
+      <InputText
+        v-model="pushUrl"
+        maxlength="30"
+        :placeholder="t('form.fields.url')"
+        fluid
+      />
     </div>
     <Button
       class="mt-2"
