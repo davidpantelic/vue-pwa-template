@@ -8,10 +8,6 @@ const { t, locale } = useI18n();
 const profileDialogShow = ref<boolean>(false);
 const userSessionStore = useUserSession();
 
-onMounted(() => {
-  userSessionStore.checkSession();
-});
-
 const initialValues = ref<userLoginCredentials>({
   email: "",
   password: "",

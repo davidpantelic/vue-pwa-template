@@ -1,8 +1,14 @@
 <script setup lang="ts">
+import { useUserSession } from "@/stores/userSession";
+
 const { t } = useI18n();
+const userSession = useUserSession();
 
 useAppTheme();
 useAutoSync();
+
+userSession.initAuthListener();
+userSession.checkSession();
 
 onMounted(async () => {
   if ("clearAppBadge" in navigator) {

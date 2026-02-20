@@ -7,6 +7,17 @@ export const useUserSession = defineStore("userSession", () => {
   const sessionError = ref<any | null>(null);
   const { t } = useI18n();
   const toast = useToast();
+  let unsub: (() => void) | null = null;
+
+  function isSessionAlreadyGone(err: any) {
+    const code = err?.code ?? err?.error?.code;
+    const msg = String(err?.message ?? err);
+    return (
+      code === "session_not_found" ||
+      msg.includes("session_not_found") ||
+      msg.includes("Auth session missing")
+    );
+  }
 
   const checkSession = async () => {
     try {
@@ -17,10 +28,23 @@ export const useUserSession = defineStore("userSession", () => {
         sessionError.value = error;
         return;
       }
+
+      // If there's a session locally, confirm it's valid on server
+      if (data.session) {
+        const { data: userRes, error: userErr } = await supabase.auth.getUser();
+        if (userErr || !userRes?.user) {
+          session.value = null;
+          sessionError.value = userErr ?? null;
+          return;
+        }
+      }
+
       session.value = data.session ?? null;
+      sessionError.value = null;
     } catch (err) {
       console.error(err);
       session.value = null;
+      sessionError.value = err;
     }
   };
 
@@ -67,8 +91,24 @@ export const useUserSession = defineStore("userSession", () => {
   const logOut = async () => {
     isLoading.value = true;
     try {
-      const { error } = await supabase.auth.signOut();
+      // If you DON'T need "logout all devices", keep local scope:
+      const { error } = await supabase.auth.signOut({ scope: "local" }); // local
+
       if (error) {
+        // If session is already gone server-side, still treat as success
+        if (isSessionAlreadyGone(error)) {
+          session.value = null;
+          sessionError.value = null;
+
+          toast.add({
+            group: "userSignToastGroup",
+            severity: "success",
+            summary: t("form.message.logoutSuccess"),
+            life: 3000,
+          });
+          return;
+        }
+
         toast.add({
           group: "userSignToastGroup",
           severity: "error",
@@ -78,14 +118,32 @@ export const useUserSession = defineStore("userSession", () => {
         });
         return;
       }
-      await checkSession();
+
+      // Normal success
+      session.value = null;
+      sessionError.value = null;
+
       toast.add({
         group: "userSignToastGroup",
         severity: "success",
         summary: t("form.message.logoutSuccess"),
         life: 3000,
       });
-    } catch (err) {
+    } catch (err: any) {
+      // Same: treat missing session as success
+      if (isSessionAlreadyGone(err)) {
+        session.value = null;
+        sessionError.value = null;
+
+        toast.add({
+          group: "userSignToastGroup",
+          severity: "success",
+          summary: t("form.message.logoutSuccess"),
+          life: 3000,
+        });
+        return;
+      }
+
       toast.add({
         group: "userSignToastGroup",
         severity: "error",
@@ -98,6 +156,15 @@ export const useUserSession = defineStore("userSession", () => {
     }
   };
 
+  const initAuthListener = () => {
+    if (unsub) return;
+    const { data } = supabase.auth.onAuthStateChange((_event, newSession) => {
+      session.value = newSession;
+      sessionError.value = null;
+    });
+    unsub = () => data.subscription.unsubscribe();
+  };
+
   return {
     isLoading,
     supabase,
@@ -106,5 +173,6 @@ export const useUserSession = defineStore("userSession", () => {
     sessionError,
     logWithPass,
     logOut,
+    initAuthListener,
   };
 });
