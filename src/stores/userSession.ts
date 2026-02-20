@@ -48,6 +48,54 @@ export const useUserSession = defineStore("userSession", () => {
     }
   };
 
+  const signUpNewUser = async (
+    credentials: userLoginCredentials,
+  ): Promise<boolean> => {
+    isLoading.value = true;
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email: credentials.email,
+        password: credentials.password,
+        // options: {
+        //   emailRedirectTo: "https://example.com/welcome",
+        // },
+      });
+
+      console.log(data);
+
+      if (error) {
+        toast.add({
+          group: "userSignToastGroup",
+          severity: "warn",
+          summary: t("form.message.registerFailed"),
+          detail: error.message,
+          life: 3000,
+        });
+        return false;
+      }
+
+      toast.add({
+        group: "userSignToastGroup",
+        severity: "success",
+        summary: t("form.message.registerSuccess"),
+        detail: t("form.message.registerSuccessMessage"),
+        life: 8000,
+      });
+      return true;
+    } catch (err) {
+      toast.add({
+        group: "userSignToastGroup",
+        severity: "error",
+        summary: t("form.message.registerFailed"),
+        detail: String(err),
+        life: 3000,
+      });
+      return false;
+    } finally {
+      isLoading.value = false;
+    }
+  };
+
   const logWithPass = async (credentials: userLoginCredentials) => {
     isLoading.value = true;
     try {
@@ -57,12 +105,20 @@ export const useUserSession = defineStore("userSession", () => {
       });
 
       if (error) {
+        const errorTranslated = computed(() => {
+          if (error.code === "invalid_credentials")
+            return t("form.message.loginFailedWrongCredentials");
+
+          if (error.code === "email_not_confirmed")
+            return t("form.message.loginFailedUnverifiedEmail");
+        });
+
         toast.add({
           group: "userSignToastGroup",
-          severity: "error",
+          severity: "warn",
           summary: t("form.message.loginFailed"),
-          detail: error.message,
-          life: 3000,
+          detail: errorTranslated,
+          life: 5000,
         });
         return;
       }
@@ -171,6 +227,7 @@ export const useUserSession = defineStore("userSession", () => {
     checkSession,
     session,
     sessionError,
+    signUpNewUser,
     logWithPass,
     logOut,
     initAuthListener,

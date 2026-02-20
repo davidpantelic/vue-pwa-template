@@ -65,7 +65,7 @@ useSeoMeta({
         <UpdateToastAndButton />
         <InstallToastAndButton />
         <Suspense>
-          <Profile />
+          <ProfileButton />
         </Suspense>
         <DrawerButton />
       </div>
