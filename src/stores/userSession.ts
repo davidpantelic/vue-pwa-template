@@ -58,7 +58,7 @@ export const useUserSession = defineStore("userSession", () => {
         password: credentials.password,
         options: {
           data: { lang: locale.value }, // "en" / "sr"
-          emailRedirectTo: `${import.meta.env.VITE_APP_URL}auth-confirmation`,
+          emailRedirectTo: `${window.location.origin}/auth-confirmation`,
         },
       });
 
