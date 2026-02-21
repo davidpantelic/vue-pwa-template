@@ -1,8 +1,8 @@
 <script setup lang="ts">
-const installDialogVisible = ref(false);
+const aboutDialogVisible = ref(false);
 
 const openDialog = () => {
-  installDialogVisible.value = true;
+  aboutDialogVisible.value = true;
 };
 
 const copied = ref(false);
@@ -34,7 +34,7 @@ const openLink = (url: string) => {
 
   <Dialog
     class="about-dialog w-full max-w-4xl"
-    v-model:visible="installDialogVisible"
+    v-model:visible="aboutDialogVisible"
     modal
     :header="$t('aboutTitle')"
   >
@@ -131,5 +131,15 @@ const openLink = (url: string) => {
         </AccordionContent>
       </AccordionPanel>
     </Accordion>
+
+    <template #closebutton>
+      <Button
+        severity="secondary"
+        size="small"
+        icon="pi pi-times"
+        variant="text"
+        @click="aboutDialogVisible = false"
+      />
+    </template>
   </Dialog>
 </template>

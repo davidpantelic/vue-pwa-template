@@ -60,6 +60,16 @@ watch(
         @successful-registration="selectedUserForm = userForms[0]"
       />
     </div>
+
+    <template #closebutton>
+      <Button
+        severity="secondary"
+        size="small"
+        icon="pi pi-times"
+        variant="text"
+        @click="profileDialogShow = false"
+      />
+    </template>
   </Dialog>
 
   <Toast group="userSignToastGroup" position="bottom-right" />

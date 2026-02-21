@@ -191,6 +191,16 @@ const hideInstallButtonManually = () => {
         @click="hideInstallButtonManually"
       />
     </div>
+
+    <template #closebutton>
+      <Button
+        severity="secondary"
+        size="small"
+        icon="pi pi-times"
+        variant="text"
+        @click="installDialogVisible = false"
+      />
+    </template>
   </Dialog>
 </template>
 
