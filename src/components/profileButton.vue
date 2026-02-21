@@ -72,5 +72,5 @@ watch(
     </template>
   </Dialog>
 
-  <Toast group="userSignToastGroup" position="bottom-right" />
+  <Toast group="userSignToastGroup" />
 </template>

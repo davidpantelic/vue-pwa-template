@@ -71,7 +71,7 @@ watch(
     :initialValues
     :resolver="resolverRef"
     @submit="onFormSubmit"
-    class="flex flex-col gap-4 w-full sm:w-72"
+    class="flex flex-col gap-4 w-full xs:w-72"
   >
     <div class="flex flex-col gap-1">
       <InputText

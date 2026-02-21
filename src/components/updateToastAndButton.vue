@@ -67,11 +67,7 @@ onMounted(() => {
     </Button>
   </Transition>
 
-  <Toast
-    group="updatePwaToastGroup"
-    position="bottom-right"
-    @close="dismissUpdate"
-  >
+  <Toast group="updatePwaToastGroup" @close="dismissUpdate">
     <template #message="{ message }">
       <div class="flex items-start gap-3">
         <div class="flex-1">
@@ -100,7 +96,7 @@ onMounted(() => {
     </template>
   </Toast>
 
-  <Toast group="successUpdateToastGroup" position="bottom-right" />
+  <Toast group="successUpdateToastGroup" />
 
   <ConfirmDialog class="update-dialog"></ConfirmDialog>
 </template>

@@ -128,3 +128,7 @@ img {
 .settings-drawer.p-drawer .p-drawer-header {
   justify-content: center;
 }
+
+.p-selectbutton .p-togglebutton-content {
+  padding-inline: 6px;
+}

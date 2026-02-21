@@ -1,19 +1,11 @@
 <script setup lang="ts"></script>
 
 <template>
-  <Toast group="upToDateToastGroup" position="bottom-right" />
+  <Toast group="upToDateToastGroup" />
 
-  <Toast
-    group="screenWakeLockToastGroup"
-    success-icon="pi pi-lightbulb"
-    position="bottom-right"
-  />
+  <Toast group="screenWakeLockToastGroup" success-icon="pi pi-lightbulb" />
 
-  <Toast
-    group="notificationsToastGroup"
-    success-icon="pi pi-bell"
-    position="bottom-right"
-  />
+  <Toast group="notificationsToastGroup" success-icon="pi pi-bell" />
 
-  <Toast group="offlineToastGroup" position="bottom-right" />
+  <Toast group="offlineToastGroup" />
 </template>

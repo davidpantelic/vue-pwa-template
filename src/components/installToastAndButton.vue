@@ -127,7 +127,6 @@ const hideInstallButtonManually = () => {
 
   <Toast
     group="installToastGroup"
-    position="bottom-right"
     @close="
       showInstallButton = true;
       isInstallToastVisible = false;
@@ -159,7 +158,7 @@ const hideInstallButtonManually = () => {
     </template>
   </Toast>
 
-  <Toast group="successInstallToastGroup" position="bottom-right" />
+  <Toast group="successInstallToastGroup" />
 
   <Dialog
     class="install-instructions-dialog"
