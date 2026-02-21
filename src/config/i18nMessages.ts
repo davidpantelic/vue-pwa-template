@@ -199,7 +199,7 @@ export const messages = {
     },
     authConfirmation: {
       title: "Email adresa je verifikovana",
-      text: "Verifikacija je uspešna. Ako je ovaj link otvoren u pretraživaču umesto u aplikaciji, vratite se u aplikaciju i nastavite sa prijavom.",
+      text: "Verifikacija je uspešna. Sada se možete prijaviti (u aplikaciji ako ste je instalirali) sa svojim podacima.",
     },
     aboutTitle: "Pomoć",
     aboutAppInstall: {
@@ -439,7 +439,7 @@ export const messages = {
     },
     authConfirmation: {
       title: "Email verified",
-      text: "Your email has been verified successfully. If this link opened in a browser instead of the app, please return to the app and continue with login.",
+      text: "Your email has been verified successfully. You can now log in (in app if you've installed it) with your details.",
     },
     aboutTitle: "Help",
     aboutAppInstall: {

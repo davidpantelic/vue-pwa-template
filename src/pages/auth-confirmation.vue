@@ -9,13 +9,18 @@ onMounted(() => {
 
   if (isStandalonePwa) {
     router.push({ path: "/" });
+  } else {
+    setTimeout(() => {
+      router.push({ path: "/" });
+    }, 6000);
   }
 });
 </script>
 
 <template>
-  <main>
+  <main class="text-center">
     <h1>{{ $t("authConfirmation.title") }}</h1>
+    <br />
     <p>{{ $t("authConfirmation.text") }}</p>
   </main>
 </template>
