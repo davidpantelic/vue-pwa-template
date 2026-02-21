@@ -54,6 +54,7 @@ declare module 'vue' {
     ProfileView: typeof import('./../../components/profileView.vue')['default']
     ReadFromIndexedDB: typeof import('./../../components/readFromIndexedDB.vue')['default']
     ReadFromSupabase: typeof import('./../../components/readFromSupabase.vue')['default']
+    RefreshButton: typeof import('./../../components/refreshButton.vue')['default']
     RegisterForm: typeof import('./../../components/registerForm.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']

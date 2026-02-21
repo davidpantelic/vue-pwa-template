@@ -8,6 +8,7 @@ const visible = ref(false);
       <ColorModeButton />
       <ScreenWakeLock />
       <CheckUpdateButton />
+      <RefreshButton />
       <EnablePushButton />
       <AboutApp />
       <LocaleChange />
