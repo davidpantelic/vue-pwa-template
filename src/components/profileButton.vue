@@ -4,6 +4,9 @@ import { useUserSession } from "../stores/userSession";
 const { t, locale } = useI18n();
 const profileDialogShow = ref<boolean>(false);
 const userSessionStore = useUserSession();
+const userLogged = ref(
+  localStorage.getItem("sb-qtwhmemfhucsxwfuottd-auth-token"),
+);
 
 const userForms = computed(() => {
   const loginWord = t("words.login");
@@ -23,6 +26,9 @@ watch(
 watch(
   () => userSessionStore.session,
   (newSession) => {
+    userLogged.value = localStorage.getItem(
+      "sb-qtwhmemfhucsxwfuottd-auth-token",
+    );
     if (newSession) {
       profileDialogShow.value = false;
     }
@@ -32,7 +38,9 @@ watch(
 
 <template>
   <Button
-    :icon="userSessionStore.session ? 'pi pi-user' : 'pi pi-sign-in'"
+    :icon="
+      userSessionStore.session || userLogged ? 'pi pi-user' : 'pi pi-sign-in'
+    "
     severity="secondary"
     size="large"
     @click="profileDialogShow = true"
