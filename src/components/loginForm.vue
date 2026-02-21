@@ -97,6 +97,7 @@ watch(
     <Button
       type="submit"
       severity="secondary"
+      size="small"
       :label="t('words.login')"
       :icon="
         userSessionStore.isLoading ? 'pi pi-spinner pi-spin' : 'pi pi-sign-in'
