@@ -60,7 +60,7 @@ export const useUserSession = defineStore("userSession", () => {
         password: credentials.password,
         options: {
           data: { lang: locale.value }, // "en" / "sr"
-          emailRedirectTo: `${window.location.origin}/auth-confirmation`,
+          emailRedirectTo: `${window.location.origin}/auth-confirmation?redirect_to_home=true`,
         },
       });
 
