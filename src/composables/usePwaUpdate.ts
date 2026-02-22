@@ -1,16 +1,21 @@
 import { registerSW } from "virtual:pwa-register";
 
-export function usePwaUpdate() {
-  const needRefresh = ref(false);
-  // const offlineReady = ref(false);
-  const showRefreshToast = ref(false);
-  const online = useOnline();
-  const swRegistration = ref<ServiceWorkerRegistration | null>(null);
+type UpdateSWFn = (reloadPage?: boolean) => Promise<void>;
 
-  // function we will call when user clicks "Reload"
-  let updateSW: ((reloadPage?: boolean) => Promise<void>) | null = null;
+const needRefresh = ref(false);
+const showRefreshToast = ref(false);
+const swRegistration = ref<ServiceWorkerRegistration | null>(null);
+const isInitialized = ref(false);
+
+let updateSW: UpdateSWFn | null = null;
+
+export function usePwaUpdate() {
+  const online = useOnline();
 
   onMounted(() => {
+    if (isInitialized.value) return;
+    isInitialized.value = true;
+
     // registerSW wires events and returns an update function
     updateSW = registerSW({
       immediate: true,
@@ -65,6 +70,16 @@ export function usePwaUpdate() {
     },
     { flush: "post" },
   );
+
+  async function settleRefreshState() {
+    // Give onNeedRefresh/onRegisteredSW a short window to fire.
+    await delay(350);
+    return (
+      needRefresh.value ||
+      showRefreshToast.value ||
+      !!swRegistration.value?.waiting
+    );
+  }
 
   async function reloadToUpdate() {
     sessionStorage.setItem("pwa_just_updated", "1");
@@ -127,12 +142,20 @@ export function usePwaUpdate() {
         showRefreshToast.value = true;
         return true;
       }
+      if (await settleRefreshState()) {
+        showRefreshToast.value = true;
+        return true;
+      }
       return false;
     }
 
     if (updateSW) {
       await updateSW();
       if (needRefresh.value || (await waitForNeedRefresh())) {
+        showRefreshToast.value = true;
+        return true;
+      }
+      if (await settleRefreshState()) {
         showRefreshToast.value = true;
         return true;
       }

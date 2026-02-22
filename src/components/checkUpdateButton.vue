@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { checkForUpdate } = usePwaUpdate();
+const { checkForUpdate, needRefresh, showRefreshToast } = usePwaUpdate();
 const toast = useToast();
 const checking = ref(false);
 const { t } = useI18n();
@@ -9,7 +9,7 @@ const onCheckForUpdate = async () => {
   checking.value = true;
 
   const hasUpdate = await checkForUpdate();
-  if (!hasUpdate) {
+  if (!hasUpdate && !needRefresh.value && !showRefreshToast.value) {
     toast.add({
       group: "upToDateToastGroup",
       severity: "success",
