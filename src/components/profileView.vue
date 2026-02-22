@@ -21,16 +21,31 @@ const { t } = useI18n();
           :label="t('words.refresh')"
           @click="checkSession"
         /> -->
+
+      <Button
+        type="button"
+        severity="secondary"
+        :label="t('words.resetPassword')"
+        :icon="
+          userSessionStore.isResetPasswordRequestLoading
+            ? 'pi pi-spin pi-spinner'
+            : 'pi pi-key'
+        "
+        icon-pos="right"
+        @click="userSessionStore.resetPasswordRequest"
+      />
+
       <Button
         type="button"
         severity="danger"
         :label="t('words.logout')"
         :icon="
-          userSessionStore.isLoading
+          userSessionStore.isLoggingOut
             ? 'pi pi-spin pi-spinner'
             : 'pi pi-sign-out'
         "
-        @click="userSessionStore.logOut"
+        icon-pos="right"
+        @click="userSessionStore.logOut('local')"
       />
     </div>
   </div>

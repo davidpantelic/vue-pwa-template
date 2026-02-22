@@ -8,4 +8,6 @@
   <Toast group="notificationsToastGroup" success-icon="pi pi-bell" />
 
   <Toast group="offlineToastGroup" />
+
+  <Toast group="resetPasswordRequestToastGroup" />
 </template>

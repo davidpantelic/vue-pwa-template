@@ -24,6 +24,7 @@ export const messages = {
       register: "Registruj se",
       login: "Prijavi se",
       logout: "Odjavi se",
+      resetPassword: "Resetujte lozinku",
     },
     meta: {
       description: "Webdak Vue3 PWA šablon",
@@ -165,6 +166,8 @@ export const messages = {
         username: "Korisničko ime",
         password: "Lozinka",
         passwordConfirm: "Potvrdite lozinku",
+        newPassword: "Nova lozinka",
+        newPasswordConfirm: "Potvrdite novu lozinku",
         body: "Poruka",
         url: "link",
         button: "Pošalji",
@@ -200,6 +203,28 @@ export const messages = {
     authConfirmation: {
       title: "Email adresa je verifikovana",
       text: "Verifikacija je uspešna. Sada se možete prijaviti (u aplikaciji ako ste je instalirali) sa svojim podacima.",
+    },
+    resetPasswordRequest: {
+      requestTitle: "Link uspešno poslat na email.",
+      requestMessage:
+        "Link za resetovanje lozinke vam je poslat na email. Potrebno je da kliknete na link koji će vas odvesti na stranicu gde možete resetovati svoju lozinku. Link važi 1 sat.",
+      requestFailTitle: "Link nije poslat",
+      requestFailMessage:
+        "Link za resetovanje lozinke vam je već poslat na email. Molimo pokušajte kasnije.",
+      pageTitle: "Resetovanje lozinke",
+      successfulChange: "Lozinka uspešno promenjena",
+      successfulChangeText:
+        "Bićete odjavljeni na svim uređajima, uključujući i ovaj. Molimo prijavite se sa novom lozinkom.",
+      failedChangeTitle: "Promena lozinke neuspešna",
+      failedChangeText:
+        "Nova lozinka treba da se razlikuje od stare lozinke. Molimo pokušajte ponovo.",
+      checkingLink: "Link za resetovanje lozinke se proverava...",
+      invalidOrExpiredLinkTitle: "Neuspešno",
+      invalidOrExpiredLinkText:
+        "Link za resetovanje lozinke je istekao ili nije ispravan. Možete pokušati ponovo.",
+      temporaryCheckFailedTitle: "Privremeni problem",
+      temporaryCheckFailedText:
+        "Trenutno nije moguće proveriti link za resetovanje lozinke. Proverite internet vezu i pokušajte ponovo.",
     },
     aboutTitle: "Pomoć",
     aboutAppInstall: {
@@ -264,6 +289,7 @@ export const messages = {
       register: "Register",
       login: "Login",
       logout: "Logout",
+      resetPassword: "Reset password",
     },
     meta: {
       description: "Reusable Vue3 PWA template by Webdak",
@@ -405,6 +431,8 @@ export const messages = {
         username: "Username",
         password: "Password",
         passwordConfirm: "Confirm password",
+        newPassword: "New password",
+        newPasswordConfirm: "Confirm new password",
         body: "Message",
         url: "Link",
         button: "Send",
@@ -440,6 +468,28 @@ export const messages = {
     authConfirmation: {
       title: "Email verified",
       text: "Your email has been verified successfully. You can now log in (in app if you've installed it) with your details.",
+    },
+    resetPasswordRequest: {
+      requestTitle: "Link successfully sent to email.",
+      requestMessage:
+        "A password reset link has been sent to your email. You need to click on a link that will take you to a page where you can reset your password. The link is valid for 1 hour.",
+      requestFailTitle: "Reset link not sent",
+      requestFailMessage:
+        "A password reset link has already been sent to your email recently. Please try again later.",
+      pageTitle: "Password reset",
+      successfulChange: "Password changed successfully",
+      successfulChangeText:
+        "You will be logged out from all devices, including this one. Please log in with new password.",
+      failedChangeTitle: "Changing password failed",
+      failedChangeText:
+        "New password should be different from the old password. Please try again.",
+      checkingLink: "The password reset link is being verified...",
+      invalidOrExpiredLinkTitle: "Failed",
+      invalidOrExpiredLinkText:
+        "The password reset link has expired or is invalid. You can try again.",
+      temporaryCheckFailedTitle: "Temporary issue",
+      temporaryCheckFailedText:
+        "We couldn't verify the password reset link right now. Check your internet connection and try again.",
     },
     aboutTitle: "Help",
     aboutAppInstall: {

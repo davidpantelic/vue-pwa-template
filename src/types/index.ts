@@ -42,3 +42,8 @@ export type userLoginCredentials = {
   password: string;
   passwordConfirm?: string;
 };
+
+export type passwordResetCredentials = {
+  password: string;
+  passwordConfirm?: string;
+};

@@ -2,6 +2,8 @@ import type { userLoginCredentials } from "@/types";
 
 export const useUserSession = defineStore("userSession", () => {
   const isLoading = ref(false);
+  const isResetPasswordRequestLoading = ref(false);
+  const isLoggingOut = ref(false);
   const supabase = useSupabaseClient();
   const session = ref<any | null>(null);
   const sessionError = ref<any | null>(null);
@@ -154,11 +156,15 @@ export const useUserSession = defineStore("userSession", () => {
     }
   };
 
-  const logOut = async () => {
-    isLoading.value = true;
+  const logOut = async (
+    logOutScope: "local" | "global" | "others" | undefined = "local",
+    options?: { silent?: boolean },
+  ) => {
+    isLoggingOut.value = true;
+    const silent = options?.silent === true;
     try {
       // If you DON'T need "logout all devices", keep local scope:
-      const { error } = await supabase.auth.signOut({ scope: "local" }); // local
+      const { error } = await supabase.auth.signOut({ scope: logOutScope }); // local
 
       if (error) {
         // If session is already gone server-side, still treat as success
@@ -166,22 +172,26 @@ export const useUserSession = defineStore("userSession", () => {
           session.value = null;
           sessionError.value = null;
 
-          toast.add({
-            group: "userSignToastGroup",
-            severity: "success",
-            summary: t("form.message.logoutSuccess"),
-            life: 3000,
-          });
+          if (!silent) {
+            toast.add({
+              group: "userSignToastGroup",
+              severity: "success",
+              summary: t("form.message.logoutSuccess"),
+              life: 3000,
+            });
+          }
           return;
         }
 
-        toast.add({
-          group: "userSignToastGroup",
-          severity: "error",
-          summary: t("form.message.logoutFailed"),
-          detail: error.message,
-          life: 3000,
-        });
+        if (!silent) {
+          toast.add({
+            group: "userSignToastGroup",
+            severity: "error",
+            summary: t("form.message.logoutFailed"),
+            detail: error.message,
+            life: 3000,
+          });
+        }
         return;
       }
 
@@ -189,36 +199,42 @@ export const useUserSession = defineStore("userSession", () => {
       session.value = null;
       sessionError.value = null;
 
-      toast.add({
-        group: "userSignToastGroup",
-        severity: "success",
-        summary: t("form.message.logoutSuccess"),
-        life: 3000,
-      });
-    } catch (err: any) {
-      // Same: treat missing session as success
-      if (isSessionAlreadyGone(err)) {
-        session.value = null;
-        sessionError.value = null;
-
+      if (!silent) {
         toast.add({
           group: "userSignToastGroup",
           severity: "success",
           summary: t("form.message.logoutSuccess"),
           life: 3000,
         });
+      }
+    } catch (err: any) {
+      // Same: treat missing session as success
+      if (isSessionAlreadyGone(err)) {
+        session.value = null;
+        sessionError.value = null;
+
+        if (!silent) {
+          toast.add({
+            group: "userSignToastGroup",
+            severity: "success",
+            summary: t("form.message.logoutSuccess"),
+            life: 3000,
+          });
+        }
         return;
       }
 
-      toast.add({
-        group: "userSignToastGroup",
-        severity: "error",
-        summary: t("form.message.logoutFailed"),
-        detail: String(err),
-        life: 3000,
-      });
+      if (!silent) {
+        toast.add({
+          group: "userSignToastGroup",
+          severity: "error",
+          summary: t("form.message.logoutFailed"),
+          detail: String(err),
+          life: 3000,
+        });
+      }
     } finally {
-      isLoading.value = false;
+      isLoggingOut.value = false;
     }
   };
 
@@ -241,8 +257,106 @@ export const useUserSession = defineStore("userSession", () => {
     unsub = () => data.subscription.unsubscribe();
   };
 
+  const updateUserLang = async () => {
+    try {
+      await supabase.auth.updateUser({
+        data: {
+          lang: locale.value,
+        },
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const resetPasswordRequest = async () => {
+    isResetPasswordRequestLoading.value = true;
+
+    await updateUserLang();
+
+    try {
+      const { data, error } = await supabase.auth.resetPasswordForEmail(
+        session.value.user.email,
+        {
+          redirectTo: `${window.location.origin}/password-reset`,
+        },
+      );
+
+      if (error) {
+        console.error(error);
+
+        toast.add({
+          group: "resetPasswordRequestToastGroup",
+          severity: "warn",
+          summary: t("resetPasswordRequest.requestFailTitle"),
+          detail: t("resetPasswordRequest.requestFailMessage"),
+          life: 5000,
+        });
+
+        return;
+      }
+
+      toast.add({
+        group: "resetPasswordRequestToastGroup",
+        severity: "success",
+        summary: t("resetPasswordRequest.requestTitle"),
+        detail: t("resetPasswordRequest.requestMessage"),
+        life: 10000,
+      });
+    } catch (err) {
+      console.error(err);
+    } finally {
+      isResetPasswordRequestLoading.value = false;
+    }
+  };
+
+  const updateUserPassword = async (new_password: string): Promise<boolean> => {
+    isLoading.value = true;
+
+    try {
+      const { data, error } = await supabase.auth.updateUser({
+        password: new_password,
+        data: {
+          lang: locale.value,
+        },
+      });
+
+      if (error) {
+        console.error(error);
+
+        if (error.code == "same_password") {
+          toast.add({
+            group: "resetPasswordRequestToastGroup",
+            severity: "warn",
+            summary: t("resetPasswordRequest.failedChangeTitle"),
+            detail: t("resetPasswordRequest.failedChangeText"),
+            life: 6000,
+          });
+        }
+
+        return false;
+      }
+
+      toast.add({
+        group: "resetPasswordRequestToastGroup",
+        severity: "success",
+        summary: t("resetPasswordRequest.successfulChange"),
+        detail: t("resetPasswordRequest.successfulChangeText"),
+        life: 6000,
+      });
+      return true;
+    } catch (err) {
+      console.error(err);
+      return false;
+    } finally {
+      isLoading.value = false;
+    }
+  };
+
   return {
     isLoading,
+    isResetPasswordRequestLoading,
+    isLoggingOut,
     supabase,
     checkSession,
     session,
@@ -251,5 +365,7 @@ export const useUserSession = defineStore("userSession", () => {
     logWithPass,
     logOut,
     initAuthListener,
+    resetPasswordRequest,
+    updateUserPassword,
   };
 });
