@@ -38,6 +38,7 @@ export type QueueItem = {
 };
 
 export type userLoginCredentials = {
+  username: string;
   email: string;
   password: string;
   passwordConfirm?: string;

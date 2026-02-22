@@ -193,6 +193,7 @@ export const messages = {
       validation: {
         titleRequired: "Naslov je obavezan",
         usernameRequired: "Korisničko ime je obavezno",
+        usernameMaxLength: "Korisničko ime može imati 10 karaktera ili manje",
         emailRequired: "Email je obavezan",
         passwordRequired: "Lozinka je obavezna",
         passwordConfirmRequired: "Potvrda lozinke je obavezna",
@@ -458,6 +459,7 @@ export const messages = {
       validation: {
         titleRequired: "Title is required",
         usernameRequired: "Username is required",
+        usernameMaxLength: "Username can be 10 characters or less",
         emailRequired: "Email is required",
         passwordRequired: "Password is required",
         passwordConfirmRequired: "Password confirmation is required",

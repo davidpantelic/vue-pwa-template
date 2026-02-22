@@ -9,6 +9,7 @@ const { t, locale } = useI18n();
 const emit = defineEmits(["successfulRegistration"]);
 
 const initialValues = ref<userLoginCredentials>({
+  username: "",
   email: "",
   password: "",
   passwordConfirm: "",
@@ -17,6 +18,10 @@ const initialValues = ref<userLoginCredentials>({
 const buildSchema = () =>
   z
     .object({
+      username: z
+        .string()
+        .min(1, { message: t("form.validation.usernameRequired") })
+        .max(10, { message: t("form.validation.usernameMaxLength") }),
       email: z.string().email({ message: t("form.validation.emailRequired") }),
       password: z
         .string()
@@ -73,6 +78,22 @@ watch(
     @submit="onFormSubmit"
     class="flex flex-col gap-4 w-full xs:w-72"
   >
+    <div class="flex flex-col gap-1">
+      <InputText
+        name="username"
+        id="username"
+        type="text"
+        :placeholder="t('form.fields.username')"
+        fluid
+      />
+      <Message
+        v-if="$form.username?.invalid"
+        severity="error"
+        size="small"
+        variant="simple"
+        >{{ $form.username.error.message }}</Message
+      >
+    </div>
     <div class="flex flex-col gap-1">
       <InputText
         name="email"
