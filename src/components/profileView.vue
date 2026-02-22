@@ -14,7 +14,7 @@ const { t } = useI18n();
         userSessionStore.session.user?.id
       }}
     </div>
-    <div class="flex gap-2">
+    <div class="flex flex-wrap gap-2">
       <!-- <Button
           type="button"
           severity="secondary"
