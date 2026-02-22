@@ -194,7 +194,7 @@ export const useUserSession = defineStore("userSession", () => {
           if (!silent) {
             toast.add({
               group: "userSignToastGroup",
-              severity: "success",
+              severity: "secondary",
               summary: t("form.message.logoutSuccess"),
               life: 3000,
             });
@@ -221,7 +221,7 @@ export const useUserSession = defineStore("userSession", () => {
       if (!silent) {
         toast.add({
           group: "userSignToastGroup",
-          severity: "success",
+          severity: "secondary",
           summary: t("form.message.logoutSuccess"),
           life: 3000,
         });
@@ -235,7 +235,7 @@ export const useUserSession = defineStore("userSession", () => {
         if (!silent) {
           toast.add({
             group: "userSignToastGroup",
-            severity: "success",
+            severity: "secondary",
             summary: t("form.message.logoutSuccess"),
             life: 3000,
           });
