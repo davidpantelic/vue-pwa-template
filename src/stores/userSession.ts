@@ -1,8 +1,4 @@
-import type {
-  userRegisterCredentials,
-  userLoginCredentials,
-  userEditCredentials,
-} from "@/types";
+import type { userCredentials } from "@/types";
 
 export const useUserSession = defineStore("userSession", () => {
   const isLoading = ref(false);
@@ -70,7 +66,7 @@ export const useUserSession = defineStore("userSession", () => {
   };
 
   const signUpNewUser = async (
-    credentials: userRegisterCredentials,
+    credentials: userCredentials["register"],
   ): Promise<boolean> => {
     isLoading.value = true;
     try {
@@ -146,7 +142,7 @@ export const useUserSession = defineStore("userSession", () => {
   };
 
   const logWithPass = async (
-    credentials: userLoginCredentials,
+    credentials: userCredentials["login"],
   ): Promise<boolean> => {
     isLoading.value = true;
     try {
@@ -299,7 +295,7 @@ export const useUserSession = defineStore("userSession", () => {
   };
 
   const updateUserData = async (
-    credentials: userEditCredentials,
+    credentials: userCredentials["edit"],
   ): Promise<boolean> => {
     isEditing.value = true;
 
@@ -326,6 +322,7 @@ export const useUserSession = defineStore("userSession", () => {
         },
       });
 
+      // TODO logout global when the new email is confirmed
       // if (emailChanged) await logOut("global");
 
       if (error) {

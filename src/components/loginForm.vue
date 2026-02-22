@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { userLoginCredentials } from "@/types";
+import type { userCredentials } from "@/types";
 import { zodResolver } from "@primevue/forms/resolvers/zod";
 import { z } from "zod";
 import { useUserSession } from "../stores/userSession";
@@ -7,7 +7,7 @@ import { useUserSession } from "../stores/userSession";
 const userSessionStore = useUserSession();
 const { t, locale } = useI18n();
 
-const initialValues = ref<userLoginCredentials>({
+const initialValues = ref<userCredentials["login"]>({
   email: "",
   password: "",
 });

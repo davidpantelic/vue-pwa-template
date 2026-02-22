@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { passwordResetCredentials } from "@/types";
+import type { userCredentials } from "@/types";
 import { zodResolver } from "@primevue/forms/resolvers/zod";
 import { z } from "zod";
 import { useUserSession } from "../stores/userSession";
@@ -21,7 +21,7 @@ const showCheckingRecovery = computed(
   () => isEvaluatingAccess.value && hasRecoveryToken && !hashError,
 );
 
-const initialValues = ref<passwordResetCredentials>({
+const initialValues = ref<userCredentials["passwordReset"]>({
   password: "",
   passwordConfirm: "",
 });

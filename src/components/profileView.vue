@@ -17,7 +17,7 @@ const editProfileForm = ref(false);
         {{ userSessionStore.session.user.email }}
       </h3>
     </div>
-    <div class="flex flex-col gap-2">
+    <div class="flex flex-col gap-4">
       <!-- <Button
           type="button"
           severity="secondary"
@@ -27,7 +27,6 @@ const editProfileForm = ref(false);
 
       <EditProfile
         v-if="editProfileForm"
-        class="mb-5"
         @edit-canceled="editProfileForm = false"
       />
 

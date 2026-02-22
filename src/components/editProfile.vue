@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { userEditCredentials } from "@/types";
+import type { userCredentials } from "@/types";
 import { zodResolver } from "@primevue/forms/resolvers/zod";
 import { z } from "zod";
 import { useUserSession } from "../stores/userSession";
@@ -9,7 +9,7 @@ const { t, locale } = useI18n();
 const toast = useToast();
 const emit = defineEmits(["editCanceled"]);
 
-const initialValues = ref<userEditCredentials>({
+const initialValues = ref<userCredentials["edit"]>({
   username: userSessionStore.session.user.user_metadata.display_name,
   email: userSessionStore.session.user.email,
 });
@@ -116,7 +116,6 @@ const onFormReset = () => {
       <Button
         type="reset"
         severity="danger"
-        size="small"
         :label="t('words.cancel')"
         icon="pi pi-times"
         iconPos="right"
@@ -124,7 +123,6 @@ const onFormReset = () => {
       <Button
         type="submit"
         severity="primary"
-        size="small"
         :label="t('words.save')"
         :icon="
           userSessionStore.isEditing ? 'pi pi-spinner pi-spin' : 'pi pi-save'

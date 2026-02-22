@@ -38,28 +38,23 @@ export type QueueItem = {
 };
 
 export type userCredentials = {
-  // TODO
-};
-
-export type userRegisterCredentials = {
-  username: string;
-  email: string;
-  password: string;
-  passwordConfirm?: string;
-};
-
-export type userLoginCredentials = {
-  email: string;
-  password: string;
-  passwordConfirm?: string;
-};
-
-export type userEditCredentials = {
-  username: string;
-  email: string;
-};
-
-export type passwordResetCredentials = {
-  password: string;
-  passwordConfirm?: string;
+  register: {
+    username: string;
+    email: string;
+    password: string;
+    passwordConfirm?: string;
+  };
+  login: {
+    email: string;
+    password: string;
+    passwordConfirm?: string;
+  };
+  edit: {
+    username: string;
+    email: string;
+  };
+  passwordReset: {
+    password: string;
+    passwordConfirm?: string;
+  };
 };
