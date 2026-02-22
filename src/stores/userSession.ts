@@ -1,15 +1,21 @@
-import type { userLoginCredentials } from "@/types";
+import type {
+  userRegisterCredentials,
+  userLoginCredentials,
+  userEditCredentials,
+} from "@/types";
 
 export const useUserSession = defineStore("userSession", () => {
   const isLoading = ref(false);
   const isResetPasswordRequestLoading = ref(false);
   const isLoggingOut = ref(false);
+  const isEditing = ref(false);
   const supabase = useSupabaseClient();
   const session = ref<any | null>(null);
   const sessionError = ref<any | null>(null);
   const { t, locale } = useI18n();
   const toast = useToast();
   let unsub: (() => void) | null = null;
+  const clickCounter = ref(0);
 
   function isSessionAlreadyGone(err: any) {
     const code = err?.code ?? err?.error?.code;
@@ -35,9 +41,22 @@ export const useUserSession = defineStore("userSession", () => {
       if (data.session) {
         const { data: userRes, error: userErr } = await supabase.auth.getUser();
         if (userErr || !userRes?.user) {
+          await logOut("global", { silent: true });
           session.value = null;
           sessionError.value = userErr ?? null;
           return;
+        }
+
+        if (
+          !data.session.user.new_email &&
+          data.session.user.email != data.session.user.user_metadata.email
+        ) {
+          const { error } = await supabase.auth.updateUser({
+            data: {
+              email: data.session.user.email,
+            },
+          });
+          if (error) console.log(error);
         }
       }
 
@@ -51,7 +70,7 @@ export const useUserSession = defineStore("userSession", () => {
   };
 
   const signUpNewUser = async (
-    credentials: userLoginCredentials,
+    credentials: userRegisterCredentials,
   ): Promise<boolean> => {
     isLoading.value = true;
     try {
@@ -120,8 +139,8 @@ export const useUserSession = defineStore("userSession", () => {
         return false;
       }
       return true;
-    } catch (error) {
-      console.warn("Failed to update user language metadata", error);
+    } catch (err) {
+      console.warn("Failed to update user language metadata", err);
       return false;
     }
   };
@@ -279,6 +298,78 @@ export const useUserSession = defineStore("userSession", () => {
     unsub = () => data.subscription.unsubscribe();
   };
 
+  const updateUserData = async (
+    credentials: userEditCredentials,
+  ): Promise<boolean> => {
+    isEditing.value = true;
+
+    const usernameChanged =
+      session.value.user.user_metadata.display_name != credentials.username;
+    const emailChanged = session.value.user.email != credentials.email;
+
+    try {
+      if (!usernameChanged && !emailChanged) {
+        if (clickCounter.value > 5) {
+          clickCounter.value = 5;
+        } else {
+          clickCounter.value++;
+        }
+        return false;
+      }
+
+      const { error } = await supabase.auth.updateUser({
+        email: credentials.email,
+        data: {
+          display_name: credentials.username?.trim() || "no_name",
+          // email: credentials.email,
+          lang: locale.value,
+        },
+      });
+
+      // if (emailChanged) await logOut("global");
+
+      if (error) {
+        console.error(error);
+
+        if (error.code == "over_email_send_rate_limit") {
+          clickCounter.value = 0;
+
+          toast.add({
+            group: "resetPasswordRequestToastGroup",
+            severity: "warn",
+            summary: t("userEdit.editFailedTitle"),
+            detail: t("userEdit.editFailedOverLimit"),
+            life: 6000,
+          });
+        } else {
+          toast.add({
+            group: "resetPasswordRequestToastGroup",
+            severity: "warn",
+            summary: t("userEdit.editFailedTitle"),
+            life: 6000,
+          });
+        }
+
+        return false;
+      }
+
+      toast.add({
+        group: "resetPasswordRequestToastGroup",
+        severity: "success",
+        summary: t("userEdit.editSuccessfulTitle"),
+        detail: emailChanged ? t("userEdit.editSuccessfulTextEmail") : "",
+        life: 6000,
+      });
+
+      return true;
+    } catch (err) {
+      console.log(err);
+      return false;
+    } finally {
+      isEditing.value = false;
+    }
+  };
+
   const resetPasswordRequest = async () => {
     isResetPasswordRequestLoading.value = true;
 
@@ -377,6 +468,7 @@ export const useUserSession = defineStore("userSession", () => {
     isLoading,
     isResetPasswordRequestLoading,
     isLoggingOut,
+    isEditing,
     supabase,
     checkSession,
     session,
@@ -385,7 +477,9 @@ export const useUserSession = defineStore("userSession", () => {
     logWithPass,
     logOut,
     initAuthListener,
+    updateUserData,
     resetPasswordRequest,
     updateUserPassword,
+    clickCounter,
   };
 });

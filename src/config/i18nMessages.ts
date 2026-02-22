@@ -205,6 +205,15 @@ export const messages = {
       title: "Email adresa je verifikovana",
       text: "Verifikacija je uspešna. Sada se možete prijaviti (u aplikaciji ako ste je instalirali) sa svojim podacima.",
     },
+    userEdit: {
+      editButton: "Izmeni informacije",
+      editSuccessfulTitle: "Promene su sačuvane",
+      editSuccessfulTextEmail:
+        "Potrebno je da potvrdite novu email adresu klikom na link koji vam je poslat.",
+      editFailedTitle: "Promene nisu sačuvane",
+      editFailedOverLimit: "Molimo pokušajte malo kasnije",
+      editFailedSameData: "Niste ništa promenili",
+    },
     resetPasswordRequest: {
       requestTitle: "Link uspešno poslat na email.",
       requestMessage:
@@ -466,6 +475,15 @@ export const messages = {
         passwordMismatch: "Passwords do not match",
         passwordMinLength: "Password must be at least 6 characters",
       },
+    },
+    userEdit: {
+      editButton: "Edit info",
+      editSuccessfulTitle: "Changes saved.",
+      editSuccessfulTextEmail:
+        "You need to confirm the new email address by clicking on the link sent to you.",
+      editFailedTitle: "Changes not saved",
+      editFailedOverLimit: "Please try again a little bit later",
+      editFailedSameData: "You have not changed anything",
     },
     authConfirmation: {
       title: "Email verified",

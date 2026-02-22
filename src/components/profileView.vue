@@ -4,17 +4,20 @@ import { useUserSession } from "../stores/userSession";
 const userSessionStore = useUserSession();
 
 const { t } = useI18n();
+const editProfileForm = ref(false);
 </script>
 
 <template>
   <div class="flex flex-col gap-3">
-    <div class="font-medium">
-      {{
-        userSessionStore.session.user?.email ||
-        userSessionStore.session.user?.id
-      }}
+    <div class="font-medium text-center">
+      <h3>
+        {{ userSessionStore.session.user.user_metadata.display_name }}
+      </h3>
+      <h3>
+        {{ userSessionStore.session.user.email }}
+      </h3>
     </div>
-    <div class="flex flex-wrap gap-2">
+    <div class="flex flex-col gap-2">
       <!-- <Button
           type="button"
           severity="secondary"
@@ -22,7 +25,24 @@ const { t } = useI18n();
           @click="checkSession"
         /> -->
 
+      <EditProfile
+        v-if="editProfileForm"
+        class="mb-5"
+        @edit-canceled="editProfileForm = false"
+      />
+
       <Button
+        v-if="!editProfileForm"
+        type="button"
+        severity="secondary"
+        :label="t('userEdit.editButton')"
+        icon="pi pi-user-edit"
+        icon-pos="right"
+        @click="editProfileForm = true"
+      />
+
+      <Button
+        v-if="!editProfileForm"
         type="button"
         severity="secondary"
         :label="t('words.resetPassword')"
@@ -36,6 +56,7 @@ const { t } = useI18n();
       />
 
       <Button
+        v-if="!editProfileForm"
         type="button"
         severity="danger"
         :label="t('words.logout')"

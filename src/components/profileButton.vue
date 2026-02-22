@@ -25,11 +25,12 @@ watch(
 
 watch(
   () => userSessionStore.session,
-  (newSession) => {
+  (newSession, oldSession) => {
     userLogged.value = localStorage.getItem(
       "sb-qtwhmemfhucsxwfuottd-auth-token",
     );
-    if (newSession) {
+    // Close dialog only when transitioning from logged-out to logged-in.
+    if (!oldSession && newSession) {
       profileDialogShow.value = false;
     }
   },
@@ -50,6 +51,8 @@ watch(
     v-model:visible="profileDialogShow"
     modal
     :header="$t('words.profile')"
+    class="w-sm max-w-full mt-20!"
+    position="top"
   >
     <ProfileView v-if="userSessionStore.session" />
 

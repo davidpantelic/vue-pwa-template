@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { userLoginCredentials } from "@/types";
+import type { userRegisterCredentials } from "@/types";
 import { zodResolver } from "@primevue/forms/resolvers/zod";
 import { z } from "zod";
 import { useUserSession } from "../stores/userSession";
@@ -8,7 +8,7 @@ const userSessionStore = useUserSession();
 const { t, locale } = useI18n();
 const emit = defineEmits(["successfulRegistration"]);
 
-const initialValues = ref<userLoginCredentials>({
+const initialValues = ref<userRegisterCredentials>({
   username: "",
   email: "",
   password: "",
@@ -76,7 +76,7 @@ watch(
     :initialValues
     :resolver="resolverRef"
     @submit="onFormSubmit"
-    class="flex flex-col gap-4 w-full xs:w-72"
+    class="flex flex-col gap-4 w-full"
   >
     <div class="flex flex-col gap-1">
       <InputText

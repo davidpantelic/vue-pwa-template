@@ -37,11 +37,26 @@ export type QueueItem = {
   retries: number;
 };
 
-export type userLoginCredentials = {
+export type userCredentials = {
+  // TODO
+};
+
+export type userRegisterCredentials = {
   username: string;
   email: string;
   password: string;
   passwordConfirm?: string;
+};
+
+export type userLoginCredentials = {
+  email: string;
+  password: string;
+  passwordConfirm?: string;
+};
+
+export type userEditCredentials = {
+  username: string;
+  email: string;
 };
 
 export type passwordResetCredentials = {
