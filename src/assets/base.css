@@ -133,3 +133,7 @@ img {
 .p-selectbutton .p-togglebutton-content {
   padding-inline: 6px;
 }
+
+.p-toast-message-icon:empty {
+  display: none;
+}
