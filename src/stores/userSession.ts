@@ -104,6 +104,25 @@ export const useUserSession = defineStore("userSession", () => {
     }
   };
 
+  const updateUserLang = async (): Promise<boolean> => {
+    if (!session.value?.user) return false;
+    try {
+      const { error } = await supabase.auth.updateUser({
+        data: {
+          lang: locale.value,
+        },
+      });
+      if (error) {
+        console.warn("Failed to update user language metadata", error);
+        return false;
+      }
+      return true;
+    } catch (error) {
+      console.warn("Failed to update user language metadata", error);
+      return false;
+    }
+  };
+
   const logWithPass = async (
     credentials: userLoginCredentials,
   ): Promise<boolean> => {
@@ -257,30 +276,28 @@ export const useUserSession = defineStore("userSession", () => {
     unsub = () => data.subscription.unsubscribe();
   };
 
-  const updateUserLang = async () => {
-    try {
-      await supabase.auth.updateUser({
-        data: {
-          lang: locale.value,
-        },
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   const resetPasswordRequest = async () => {
     isResetPasswordRequestLoading.value = true;
 
-    await updateUserLang();
+    // Non-blocking best effort: keep email language metadata updated for templates.
+    void updateUserLang();
 
     try {
-      const { data, error } = await supabase.auth.resetPasswordForEmail(
-        session.value.user.email,
-        {
-          redirectTo: `${window.location.origin}/password-reset`,
-        },
-      );
+      const email = session.value?.user?.email;
+      if (!email) {
+        toast.add({
+          group: "resetPasswordRequestToastGroup",
+          severity: "warn",
+          summary: t("resetPasswordRequest.requestFailTitle"),
+          detail: t("resetPasswordRequest.requestFailMessage"),
+          life: 5000,
+        });
+        return;
+      }
+
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/password-reset`,
+      });
 
       if (error) {
         console.error(error);
@@ -314,7 +331,7 @@ export const useUserSession = defineStore("userSession", () => {
     isLoading.value = true;
 
     try {
-      const { data, error } = await supabase.auth.updateUser({
+      const { error } = await supabase.auth.updateUser({
         password: new_password,
         data: {
           lang: locale.value,
