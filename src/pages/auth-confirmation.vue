@@ -2,11 +2,8 @@
 const router = useRouter();
 
 onMounted(() => {
-  const hash = new URLSearchParams(window.location.hash.replace(/^#/, ""));
-
-  if (!hash.has("redirect_to_home")) {
-    router.push({ path: "/" });
-  }
+  const query = new URLSearchParams(window.location.search);
+  const shouldDelayRedirect = query.get("redirect_to_home") === "true";
 
   const isStandalonePwa =
     window.matchMedia("(display-mode: standalone)").matches ||
@@ -14,12 +11,18 @@ onMounted(() => {
       true;
 
   if (isStandalonePwa) {
-    router.push({ path: "/" });
-  } else {
-    setTimeout(() => {
-      router.push({ path: "/" });
-    }, 6000);
+    void router.push({ path: "/" });
+    return;
   }
+
+  if (shouldDelayRedirect) {
+    setTimeout(() => {
+      void router.push({ path: "/" });
+    }, 6000);
+    return;
+  }
+
+  void router.push({ path: "/" });
 });
 </script>
 
