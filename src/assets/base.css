@@ -75,7 +75,7 @@ a {
 input,
 textarea,
 select,
-button,
+.p-button-label,
 .p-togglebutton-label {
   @apply text-sm! md:text-base!;
   font-weight: 400;
