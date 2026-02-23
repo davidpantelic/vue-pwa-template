@@ -11,7 +11,7 @@ const isLocalhost =
 const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ""));
 const queryMessage = hashParams.get("message");
 
-if (!queryMessage && isLocalhost) {
+if (!queryMessage && !isLocalhost) {
   await userSessionStore.logOut("global", { silent: true });
   // await userSessionStore.checkSession();
 
