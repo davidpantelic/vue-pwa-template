@@ -18,6 +18,8 @@ const BADGE_DB = "webdak-pwa-badge";
 const BADGE_STORE = "meta";
 const BADGE_KEY = "count";
 
+let badgeDbPromise: Promise<IDBDatabase> | null = null;
+
 const openBadgeDb = () =>
   new Promise<IDBDatabase>((resolve, reject) => {
     const request = indexedDB.open(BADGE_DB, 1);
@@ -27,12 +29,26 @@ const openBadgeDb = () =>
         db.createObjectStore(BADGE_STORE);
       }
     };
-    request.onsuccess = () => resolve(request.result);
+    request.onsuccess = () => {
+      const db = request.result;
+      db.onversionchange = () => {
+        db.close();
+        badgeDbPromise = null;
+      };
+      resolve(db);
+    };
     request.onerror = () => reject(request.error);
   });
 
+const getBadgeDb = () => {
+  if (!badgeDbPromise) {
+    badgeDbPromise = openBadgeDb();
+  }
+  return badgeDbPromise;
+};
+
 const getBadgeCount = async () => {
-  const db = await openBadgeDb();
+  const db = await getBadgeDb();
   return new Promise<number>((resolve) => {
     const tx = db.transaction(BADGE_STORE, "readonly");
     const store = tx.objectStore(BADGE_STORE);
@@ -43,7 +59,7 @@ const getBadgeCount = async () => {
 };
 
 const setBadgeCount = async (count: number) => {
-  const db = await openBadgeDb();
+  const db = await getBadgeDb();
   await new Promise<void>((resolve) => {
     const tx = db.transaction(BADGE_STORE, "readwrite");
     const store = tx.objectStore(BADGE_STORE);
@@ -56,7 +72,11 @@ const setBadgeCount = async (count: number) => {
     clearAppBadge?: () => Promise<void>;
   };
   if (reg.setAppBadge) {
-    await reg.setAppBadge(count);
+    try {
+      await reg.setAppBadge(count);
+    } catch (err) {
+      console.warn("Failed to set app badge", err);
+    }
   }
 };
 
@@ -66,7 +86,11 @@ const clearBadge = async () => {
     clearAppBadge?: () => Promise<void>;
   };
   if (reg.clearAppBadge) {
-    await reg.clearAppBadge();
+    try {
+      await reg.clearAppBadge();
+    } catch (err) {
+      console.warn("Failed to clear app badge", err);
+    }
   }
 };
 
@@ -102,14 +126,19 @@ registerRoute(
 
 if (supabaseOrigin) {
   registerRoute(
-    ({ url }) => url.origin === supabaseOrigin,
+    ({ request, url }) =>
+      request.method === "GET" &&
+      url.origin === supabaseOrigin &&
+      // Cache only publicly cache-safe Supabase storage objects.
+      // url.pathname.startsWith("/storage/v1/object/public/"),
+      url.pathname.startsWith("/rest/v1/"),
     new NetworkFirst({
-      cacheName: "api",
+      cacheName: "supabase",
       networkTimeoutSeconds: 5,
       plugins: [
         new ExpirationPlugin({
-          maxEntries: 100,
-          maxAgeSeconds: 60 * 5,
+          maxEntries: 200,
+          maxAgeSeconds: 60 * 60 * 24,
         }),
         new CacheableResponsePlugin({ statuses: [0, 200] }),
       ],
@@ -120,7 +149,16 @@ if (supabaseOrigin) {
 self.addEventListener("push", (event) => {
   event.waitUntil(
     (async () => {
-      const data = event.data?.json?.() ?? {};
+      let data: Record<string, any> = {};
+      if (event.data) {
+        try {
+          data = event.data.json() as Record<string, any>;
+        } catch {
+          // Some push payloads are plain text; keep notification flow alive.
+          const text = event.data.text?.() ?? "";
+          data = text ? { body: text } : {};
+        }
+      }
       const title = data.title ?? "Notification";
       const options: NotificationOptions = {
         body: data.body ?? "",
@@ -131,8 +169,13 @@ self.addEventListener("push", (event) => {
         },
       };
 
-      const nextCount = (await getBadgeCount()) + 1;
-      await setBadgeCount(nextCount);
+      try {
+        const nextCount = (await getBadgeCount()) + 1;
+        await setBadgeCount(nextCount);
+      } catch (err) {
+        // Badge errors should never block notification delivery.
+        console.warn("Badge update failed", err);
+      }
       await self.registration.showNotification(title, options);
     })(),
   );
@@ -142,6 +185,10 @@ self.addEventListener("notificationclick", (event) => {
   event.notification.close();
   const url = event.notification.data?.url ?? "/";
   const targetUrl = new URL(url, self.location.origin).href;
+  const targetRouteKey = (() => {
+    const parsed = new URL(targetUrl);
+    return `${parsed.origin}${parsed.pathname}`;
+  })();
 
   event.waitUntil(
     (async () => {
@@ -151,7 +198,16 @@ self.addEventListener("notificationclick", (event) => {
         includeUncontrolled: true,
       });
       for (const client of clientsArr) {
-        if ("focus" in client && client.url === targetUrl) {
+        const clientRouteKey = (() => {
+          try {
+            const parsed = new URL(client.url);
+            return `${parsed.origin}${parsed.pathname}`;
+          } catch {
+            return client.url;
+          }
+        })();
+
+        if ("focus" in client && clientRouteKey === targetRouteKey) {
           return client.focus();
         }
       }
