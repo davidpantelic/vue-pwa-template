@@ -1,22 +1,43 @@
 <script setup lang="ts">
 import type { AppRecord, QueueItem } from "@/types";
+import { useUserSession } from "../stores/userSession";
 
 const { t } = useI18n();
 const online = useOnline();
 const TABLE_NAME = "records";
+const userSessionStore = useUserSession();
 const showDeleted = ref(true);
 const records = ref<AppRecord[]>([]);
 const message = ref<string | null>(null);
 const isLoading = ref(false);
 
+watch(
+  () => userSessionStore.session,
+  (session) => {
+    if (!session) {
+      records.value = [];
+      message.value = null;
+      isLoading.value = false;
+    }
+  },
+);
+
 const loadRecords = async () => {
+  const userId = userSessionStore.session?.user?.id;
+  if (!userId) {
+    records.value = [];
+    message.value = t("form.message.loggedRequired");
+    return;
+  }
+
   isLoading.value = true;
   message.value = null;
   try {
     const result = await listRecordsFromIndexedDb();
+    const ownRecords = result.filter((r) => r.user_id === userId);
     records.value = showDeleted.value
-      ? result.filter((r) => r.deletedAt)
-      : result.filter((r) => !r.deletedAt);
+      ? ownRecords.filter((r) => r.deletedAt)
+      : ownRecords.filter((r) => !r.deletedAt);
     if (!records.value.length) {
       message.value = showDeleted.value
         ? t("api.noDeletedRecords")
@@ -45,6 +66,16 @@ const enqueueUpsert = async (record: AppRecord) => {
 };
 
 const restoreRecord = async (record: AppRecord) => {
+  const userId = userSessionStore.session?.user?.id;
+  if (!userId) {
+    message.value = t("form.message.loggedRequired");
+    return;
+  }
+  if (record.user_id !== userId) {
+    message.value = t("api.recordRestoreFailed");
+    return;
+  }
+
   isLoading.value = true;
   message.value = null;
   const nowIso = new Date().toISOString();

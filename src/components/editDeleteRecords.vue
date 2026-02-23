@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import type { AppRecord, QueueItem } from "@/types";
+import { useUserSession } from "../stores/userSession";
 
 const { t } = useI18n();
 const online = useOnline();
 const TABLE_NAME = "records";
+const userSessionStore = useUserSession();
 const records = ref<AppRecord[]>([]);
 const message = ref<string | null>(null);
 const editingId = ref<string | null>(null);
@@ -11,12 +13,33 @@ const editTitle = ref("");
 const editBody = ref("");
 const isLoading = ref(false);
 
+watch(
+  () => userSessionStore.session,
+  (session) => {
+    if (!session) {
+      records.value = [];
+      message.value = null;
+      editingId.value = null;
+      editTitle.value = "";
+      editBody.value = "";
+      isLoading.value = false;
+    }
+  },
+);
+
 const loadRecords = async () => {
+  const userId = userSessionStore.session?.user?.id;
+  if (!userId) {
+    records.value = [];
+    message.value = t("form.message.loggedRequired");
+    return;
+  }
+
   isLoading.value = true;
   message.value = null;
   try {
     const result = await listRecordsFromIndexedDb();
-    records.value = result.filter((r) => !r.deletedAt);
+    records.value = result.filter((r) => r.user_id === userId && !r.deletedAt);
     if (!records.value.length) message.value = t("api.noRecords");
   } catch (err) {
     message.value = t("api.loadingFailed");
@@ -51,6 +74,16 @@ const enqueueUpsert = async (record: AppRecord) => {
 };
 
 const saveEdit = async (record: AppRecord) => {
+  const userId = userSessionStore.session?.user?.id;
+  if (!userId) {
+    message.value = t("form.message.loggedRequired");
+    return;
+  }
+  if (record.user_id !== userId) {
+    message.value = t("api.changeFailed");
+    return;
+  }
+
   if (!editTitle.value.trim()) {
     message.value = t("form.validation.titleRequired");
     return;
@@ -93,6 +126,16 @@ const saveEdit = async (record: AppRecord) => {
 };
 
 const softDelete = async (record: AppRecord) => {
+  const userId = userSessionStore.session?.user?.id;
+  if (!userId) {
+    message.value = t("form.message.loggedRequired");
+    return;
+  }
+  if (record.user_id !== userId) {
+    message.value = t("api.deleteFailed");
+    return;
+  }
+
   isLoading.value = true;
   message.value = null;
   const nowIso = new Date().toISOString();

@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { useMainStore } from "@/stores/mainStore";
+import { useUserSession } from "../stores/userSession";
 
 const store = useMainStore();
+const userSessionStore = useUserSession();
 const { syncDb, syncMessage } = useSyncDb();
 </script>
 
@@ -14,6 +16,7 @@ const { syncDb, syncMessage } = useSyncDb();
     :icon="store.isLoading ? 'pi pi-spinner pi-spin' : 'pi pi-sync'"
     :label="$t('api.syncDb')"
     size="small"
+    :disabled="!userSessionStore.session"
     @click="syncDb"
   />
   <div v-if="syncMessage" class="mt-2 text-sm opacity-80">

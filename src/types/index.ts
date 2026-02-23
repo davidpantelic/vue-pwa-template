@@ -8,6 +8,7 @@ export type FormErrors = Record<string, { message: string }[]>;
 
 export type AppRecord = {
   id: string;
+  user_id?: string;
   title: string;
   body?: string;
   createdAt: string;

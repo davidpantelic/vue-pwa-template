@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import type { QueueItem } from "@/types";
+import { useUserSession } from "../stores/userSession";
 
 const { t } = useI18n();
+const userSessionStore = useUserSession();
 const title = ref("");
 const body = ref("");
 const saveMessage = ref<string | null>(null);
@@ -10,6 +12,14 @@ const online = useOnline();
 const isLoading = ref(false);
 
 const writeToSupabase = async () => {
+  const userId = userSessionStore.session?.user?.id;
+  if (!userId) {
+    saveMessage.value = t("form.message.loggedRequired");
+    await delay(2000);
+    saveMessage.value = null;
+    return;
+  }
+
   if (!title.value.trim()) {
     saveMessage.value = t("form.validation.titleRequired");
     await delay(2000);
@@ -21,6 +31,7 @@ const writeToSupabase = async () => {
   saveMessage.value = null;
   try {
     const record = createRecord({
+      user_id: userId,
       title: title.value.trim(),
       body: body.value.trim() || undefined,
     });
