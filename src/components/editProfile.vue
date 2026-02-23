@@ -7,7 +7,7 @@ import { useUserSession } from "../stores/userSession";
 const userSessionStore = useUserSession();
 const { t, locale } = useI18n();
 const toast = useToast();
-const emit = defineEmits(["editCanceled"]);
+const emit = defineEmits(["closeEdit"]);
 
 const initialValues = ref<userCredentials["edit"]>({
   username: userSessionStore.session.user.user_metadata.display_name,
@@ -43,6 +43,7 @@ const onFormSubmit = async (e: any): Promise<void> => {
         life: 6000,
       });
     }
+    if (success) emit("closeEdit");
   }
 };
 
@@ -56,7 +57,7 @@ watch(
 );
 
 const onFormReset = () => {
-  emit("editCanceled");
+  emit("closeEdit");
 };
 </script>
 

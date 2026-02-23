@@ -27,7 +27,7 @@ const editProfileForm = ref(false);
 
       <EditProfile
         v-if="editProfileForm"
-        @edit-canceled="editProfileForm = false"
+        @close-edit="editProfileForm = false"
       />
 
       <Button
