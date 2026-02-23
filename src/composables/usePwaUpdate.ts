@@ -4,14 +4,47 @@ type UpdateSWFn = (reloadPage?: boolean) => Promise<void>;
 
 const needRefresh = ref(false);
 const showRefreshToast = ref(false);
+const isApplyingUpdate = ref(false);
 const swRegistration = ref<ServiceWorkerRegistration | null>(null);
 const isInitialized = ref(false);
+const isOnlineWatcherInitialized = ref(false);
 
 let updateSW: UpdateSWFn | null = null;
+let inFlightCheck: Promise<boolean> | null = null;
+let inFlightRegistrationUpdate: Promise<void> | null = null;
+
+function markUpdateAvailable() {
+  needRefresh.value = true;
+  showRefreshToast.value = true;
+}
+
+async function updateRegistrationOnce(
+  registration: ServiceWorkerRegistration,
+): Promise<void> {
+  if (inFlightRegistrationUpdate) {
+    await inFlightRegistrationUpdate;
+    return;
+  }
+
+  inFlightRegistrationUpdate = (async () => {
+    try {
+      await registration.update();
+    } catch (err) {
+      console.warn("PWA update check failed", err);
+    } finally {
+      inFlightRegistrationUpdate = null;
+    }
+  })();
+
+  await inFlightRegistrationUpdate;
+}
+
+function clearUpdatePrompt() {
+  needRefresh.value = false;
+  showRefreshToast.value = false;
+}
 
 export function usePwaUpdate() {
-  const online = useOnline();
-
   onMounted(() => {
     if (isInitialized.value) return;
     isInitialized.value = true;
@@ -20,14 +53,12 @@ export function usePwaUpdate() {
     updateSW = registerSW({
       immediate: true,
       onNeedRefresh() {
-        needRefresh.value = true;
-        showRefreshToast.value = true;
+        markUpdateAvailable();
       },
       onRegisteredSW(_, registration) {
         swRegistration.value = registration ?? null;
         if (registration?.waiting) {
-          needRefresh.value = true;
-          showRefreshToast.value = true;
+          markUpdateAvailable();
         }
       },
       // onOfflineReady() {
@@ -36,40 +67,22 @@ export function usePwaUpdate() {
     });
   });
 
-  // When connectivity is restored, re-check for updates.
-  watch(
-    online,
-    async (isOnline, wasOnline) => {
-      if (isOnline && wasOnline === false) {
-        const registration = swRegistration.value;
-        if (registration?.waiting) {
-          needRefresh.value = true;
-          showRefreshToast.value = true;
-          return;
-        }
-
-        if (registration) {
-          try {
-            await registration.update();
-          } catch (err) {
-            console.warn("PWA update check failed", err);
-          }
-
-          if (registration.waiting) {
-            needRefresh.value = true;
-            showRefreshToast.value = true;
-          }
-          return;
-        }
-
-        if (updateSW) {
-          // Trigger a check; do not reload here, let onNeedRefresh show the toast.
-          await updateSW();
-        }
-      }
-    },
-    { flush: "post" },
-  );
+  // Install a single online watcher for the entire app instance.
+  if (!isOnlineWatcherInitialized.value) {
+    isOnlineWatcherInitialized.value = true;
+    const watcherScope = effectScope(true);
+    watcherScope.run(() => {
+      const online = useOnline();
+      watch(
+        online,
+        async (isOnline, wasOnline) => {
+          if (!isOnline || wasOnline !== false) return;
+          await checkForUpdate();
+        },
+        { flush: "post" },
+      );
+    });
+  }
 
   async function settleRefreshState() {
     // Give onNeedRefresh/onRegisteredSW a short window to fire.
@@ -82,22 +95,45 @@ export function usePwaUpdate() {
   }
 
   async function reloadToUpdate() {
+    if (isApplyingUpdate.value) return;
+    isApplyingUpdate.value = true;
     sessionStorage.setItem("pwa_just_updated", "1");
+    clearUpdatePrompt();
 
-    const registration = swRegistration.value;
-    if (registration?.waiting) {
-      let reloading = false;
-      navigator.serviceWorker.addEventListener("controllerchange", () => {
-        if (reloading) return;
-        reloading = true;
-        window.location.reload();
-      });
-      registration.waiting.postMessage({ type: "SKIP_WAITING" });
-      return;
+    try {
+      const registration = swRegistration.value;
+      if (registration?.waiting) {
+        let reloading = false;
+        const reloadOnce = () => {
+          if (reloading) return;
+          reloading = true;
+          window.location.reload();
+        };
+
+        navigator.serviceWorker.addEventListener(
+          "controllerchange",
+          reloadOnce,
+          {
+            once: true,
+          },
+        );
+        registration.waiting.postMessage({ type: "SKIP_WAITING" });
+
+        // Fallback in case controllerchange is missed/delayed.
+        setTimeout(reloadOnce, 1500);
+        return;
+      }
+
+      if (updateSW) {
+        await updateSW(true);
+        return;
+      }
+
+      window.location.reload();
+    } finally {
+      // If reload happens, this state is irrelevant; if it doesn't, allow retry.
+      isApplyingUpdate.value = false;
     }
-
-    if (!updateSW) return;
-    await updateSW(true);
   }
 
   function waitForNeedRefresh(timeoutMs = 3000): Promise<boolean> {
@@ -120,48 +156,53 @@ export function usePwaUpdate() {
   }
 
   async function checkForUpdate(): Promise<boolean> {
-    if (needRefresh.value) {
-      showRefreshToast.value = true;
-      return true;
-    }
+    if (inFlightCheck) return inFlightCheck;
 
-    const registration = swRegistration.value;
-    if (registration) {
-      try {
-        await registration.update();
-      } catch (err) {
-        console.warn("PWA manual update check failed", err);
+    inFlightCheck = (async () => {
+      if (needRefresh.value) {
+        showRefreshToast.value = true;
+        return true;
       }
 
-      if (registration.waiting) {
-        needRefresh.value = true;
-        showRefreshToast.value = true;
-        return true;
+      const registration = swRegistration.value;
+      if (registration) {
+        await updateRegistrationOnce(registration);
+
+        if (registration.waiting) {
+          markUpdateAvailable();
+          return true;
+        }
+        if (await waitForNeedRefresh()) {
+          showRefreshToast.value = true;
+          return true;
+        }
+        if (await settleRefreshState()) {
+          showRefreshToast.value = true;
+          return true;
+        }
+        return false;
       }
-      if (await waitForNeedRefresh()) {
-        showRefreshToast.value = true;
-        return true;
+
+      if (updateSW) {
+        await updateSW();
+        if (needRefresh.value || (await waitForNeedRefresh())) {
+          showRefreshToast.value = true;
+          return true;
+        }
+        if (await settleRefreshState()) {
+          showRefreshToast.value = true;
+          return true;
+        }
       }
-      if (await settleRefreshState()) {
-        showRefreshToast.value = true;
-        return true;
-      }
+
       return false;
-    }
+    })();
 
-    if (updateSW) {
-      await updateSW();
-      if (needRefresh.value || (await waitForNeedRefresh())) {
-        showRefreshToast.value = true;
-        return true;
-      }
-      if (await settleRefreshState()) {
-        showRefreshToast.value = true;
-        return true;
-      }
+    try {
+      return await inFlightCheck;
+    } finally {
+      inFlightCheck = null;
     }
-
-    return false;
   }
 
   function dismissUpdate() {
@@ -176,5 +217,6 @@ export function usePwaUpdate() {
     checkForUpdate,
     dismissUpdate,
     showRefreshToast,
+    isApplyingUpdate,
   };
 }

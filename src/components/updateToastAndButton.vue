@@ -1,6 +1,11 @@
 <script setup lang="ts">
-const { needRefresh, reloadToUpdate, dismissUpdate, showRefreshToast } =
-  usePwaUpdate();
+const {
+  needRefresh,
+  reloadToUpdate,
+  dismissUpdate,
+  showRefreshToast,
+  isApplyingUpdate,
+} = usePwaUpdate();
 
 const { t } = useI18n();
 const toast = useToast();
@@ -8,6 +13,7 @@ const confirmDialog = useConfirm();
 
 watch(showRefreshToast, (val) => {
   if (val) {
+    toast.removeGroup("updatePwaToastGroup");
     toast.add({
       group: "updatePwaToastGroup",
       severity: "warn",
@@ -88,7 +94,9 @@ onMounted(() => {
             <Button
               size="small"
               :label="t('words.update')"
-              @click="reloadToUpdate"
+              :disabled="isApplyingUpdate"
+              :loading="isApplyingUpdate"
+              @click="() => void reloadToUpdate()"
             />
           </div>
         </div>
