@@ -72,7 +72,9 @@ useSeoMeta({
     </nav>
   </header>
 
-  <RouterView class="p-5" />
+  <Suspense>
+    <RouterView class="p-5" />
+  </Suspense>
 
   <ToastsGroup />
 </template>

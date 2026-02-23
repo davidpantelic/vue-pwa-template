@@ -44,6 +44,13 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    '/email-changed': RouteRecordInfo<
+      '/email-changed',
+      '/email-changed',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
     '/password-reset': RouteRecordInfo<
       '/password-reset',
       '/password-reset',
@@ -86,6 +93,12 @@ declare module 'vue-router/auto-routes' {
     'src/pages/auth-confirmation.vue': {
       routes:
         | '/auth-confirmation'
+      views:
+        | never
+    }
+    'src/pages/email-changed.vue': {
+      routes:
+        | '/email-changed'
       views:
         | never
     }

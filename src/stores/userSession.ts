@@ -279,13 +279,13 @@ export const useUserSession = defineStore("userSession", () => {
     if (unsub) return;
 
     const { data } = supabase.auth.onAuthStateChange((_event, newSession) => {
-      if (!newSession) {
-        session.value = null;
-        sessionError.value = null;
-        return;
-      }
+      // Immediately reflect Supabase session in UI (prevents icon flicker)
+      session.value = newSession ?? null;
+      sessionError.value = null;
 
-      // Do not await inside auth callback
+      if (!newSession) return;
+
+      // Background authoritative validation
       setTimeout(() => {
         void checkSession();
       }, 0);
@@ -306,24 +306,25 @@ export const useUserSession = defineStore("userSession", () => {
     try {
       if (!usernameChanged && !emailChanged) {
         if (clickCounter.value > 5) {
-          clickCounter.value = 5;
+          clickCounter.value = 4;
         } else {
           clickCounter.value++;
         }
         return false;
       }
 
-      const { error } = await supabase.auth.updateUser({
-        email: credentials.email,
-        data: {
-          display_name: credentials.username?.trim() || "no_name",
-          // email: credentials.email,
-          lang: locale.value,
+      const { error } = await supabase.auth.updateUser(
+        {
+          email: credentials.email,
+          data: {
+            display_name: credentials.username?.trim() || "no_name",
+            lang: locale.value,
+          },
         },
-      });
-
-      // TODO logout global when the new email is confirmed
-      // if (emailChanged) await logOut("global");
+        {
+          emailRedirectTo: `${window.location.origin}/email-changed`,
+        },
+      );
 
       if (error) {
         console.error(error);

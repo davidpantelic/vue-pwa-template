@@ -213,6 +213,10 @@ export const messages = {
       editFailedTitle: "Promene nisu sačuvane",
       editFailedOverLimit: "Molimo pokušajte malo kasnije",
       editFailedSameData: "Niste ništa promenili",
+      editEmailVerificationOne:
+        "Link za potvrdu je prihvaćen. Potvrdite i link koji je poslat na vašu drugu email adresu.",
+      editEmailVerificationBoth:
+        "Link za potvrdu je prihvaćen. Obe email adrese su potvrđene. Bićete odjavljeni sa svih uređaja. Prijavite se ponovo sa novom email adresom.",
     },
     resetPasswordRequest: {
       requestTitle: "Link uspešno poslat na email.",
@@ -484,6 +488,10 @@ export const messages = {
       editFailedTitle: "Changes not saved",
       editFailedOverLimit: "Please try again a little bit later",
       editFailedSameData: "You have not changed anything",
+      editEmailVerificationOne:
+        "Confirmation link accepted. Please confirm the link sent to your other email address.",
+      editEmailVerificationBoth:
+        "Confirmation link accepted. Both email addresses are confirmed. You will be logged out on all devices. Please log in again with your new email address.",
     },
     authConfirmation: {
       title: "Email verified",
