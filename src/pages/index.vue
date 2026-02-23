@@ -2,7 +2,7 @@
 
 <template>
   <main>
-    <h1>Webdak Vue PWA <span class="text-3xl">v34</span></h1>
+    <h1>Webdak Vue PWA <span class="text-3xl">v35</span></h1>
     <br />
     <h2>{{ $t("words.hello") }}</h2>
     <p>{{ $d(new Date(), "time") }}</p>
