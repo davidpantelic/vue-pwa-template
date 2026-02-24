@@ -10,7 +10,9 @@ const userSessionStore = useUserSession();
     severity="danger"
     :label="$t('words.logoutGlobal')"
     :icon="
-      userSessionStore.isLoggingOut ? 'pi pi-spin pi-spinner' : 'pi pi-sign-out'
+      userSessionStore.isLoggingOutGlobal
+        ? 'pi pi-spin pi-spinner'
+        : 'pi pi-sign-out'
     "
     icon-pos="right"
     @click="userSessionStore.logOut('global', { silent: true })"

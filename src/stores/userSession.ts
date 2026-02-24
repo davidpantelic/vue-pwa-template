@@ -4,6 +4,7 @@ export const useUserSession = defineStore("userSession", () => {
   const isLoading = ref(false);
   const isResetPasswordRequestLoading = ref(false);
   const isLoggingOut = ref(false);
+  const isLoggingOutGlobal = ref(false);
   const isEditing = ref(false);
   const googleSigning = ref(false);
   const supabase = useSupabaseClient();
@@ -259,7 +260,7 @@ export const useUserSession = defineStore("userSession", () => {
     logOutScope: "local" | "global" | "others" | undefined = "local",
     options?: { silent?: boolean },
   ) => {
-    isLoggingOut.value = true;
+    isLoggingOutGlobal.value = true;
     const silent = options?.silent === true;
     const isGlobalLogout = logOutScope === "global";
     const currentUserId = session.value?.user?.id;
@@ -356,7 +357,7 @@ export const useUserSession = defineStore("userSession", () => {
         startForceLogoutListener(session.value.user.id);
       }
     } finally {
-      isLoggingOut.value = false;
+      isLoggingOutGlobal.value = false;
     }
   };
 
@@ -571,6 +572,7 @@ export const useUserSession = defineStore("userSession", () => {
     isLoading,
     isResetPasswordRequestLoading,
     isLoggingOut,
+    isLoggingOutGlobal,
     isEditing,
     googleSigning,
     signWithGoogle,
