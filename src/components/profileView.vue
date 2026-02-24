@@ -44,43 +44,44 @@ const avatarUrl = computed(() => {
         @close-edit="editProfileForm = false"
       />
 
-      <Button
-        v-if="!editProfileForm"
-        type="button"
-        severity="secondary"
-        :label="t('userEdit.editButton')"
-        icon="pi pi-user-edit"
-        icon-pos="right"
-        @click="editProfileForm = true"
-      />
+      <template v-if="!editProfileForm">
+        <Button
+          type="button"
+          severity="secondary"
+          :label="t('userEdit.editButton')"
+          icon="pi pi-user-edit"
+          icon-pos="right"
+          @click="editProfileForm = true"
+        />
 
-      <Button
-        v-if="!editProfileForm"
-        type="button"
-        severity="secondary"
-        :label="t('words.resetPassword')"
-        :icon="
-          userSessionStore.isResetPasswordRequestLoading
-            ? 'pi pi-spin pi-spinner'
-            : 'pi pi-key'
-        "
-        icon-pos="right"
-        @click="userSessionStore.resetPasswordRequest"
-      />
+        <Button
+          type="button"
+          severity="secondary"
+          :label="t('words.resetPassword')"
+          :icon="
+            userSessionStore.isResetPasswordRequestLoading
+              ? 'pi pi-spin pi-spinner'
+              : 'pi pi-key'
+          "
+          icon-pos="right"
+          @click="userSessionStore.resetPasswordRequest"
+        />
 
-      <Button
-        v-if="!editProfileForm"
-        type="button"
-        severity="danger"
-        :label="t('words.logout')"
-        :icon="
-          userSessionStore.isLoggingOut
-            ? 'pi pi-spin pi-spinner'
-            : 'pi pi-sign-out'
-        "
-        icon-pos="right"
-        @click="userSessionStore.logOut('local')"
-      />
+        <Button
+          type="button"
+          severity="danger"
+          :label="t('words.logout')"
+          :icon="
+            userSessionStore.isLoggingOut
+              ? 'pi pi-spin pi-spinner'
+              : 'pi pi-sign-out'
+          "
+          icon-pos="right"
+          @click="userSessionStore.logOut('local')"
+        />
+
+        <LogoutGlobalButton />
+      </template>
     </div>
   </div>
 </template>

@@ -66,6 +66,45 @@ export const useUserSession = defineStore("userSession", () => {
     }
   };
 
+  let forceLogoutChannel: ReturnType<typeof supabase.channel> | null = null;
+
+  const stopForceLogoutListener = () => {
+    if (!forceLogoutChannel) return;
+    void supabase.removeChannel(forceLogoutChannel);
+    forceLogoutChannel = null;
+  };
+
+  const startForceLogoutListener = (userId: string) => {
+    stopForceLogoutListener();
+
+    forceLogoutChannel = supabase
+      .channel(`force-logout-${userId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "auth_events",
+          filter: `user_id=eq.${userId}`,
+        },
+        async (payload) => {
+          if (payload.new?.type !== "force_logout") return;
+
+          // logout this device immediately
+          await logOut("local", { silent: true });
+
+          toast.add({
+            group: "userSignToastGroup",
+            severity: "warn",
+            summary: t("form.message.logoutSuccess"),
+            detail: t("form.message.loggedRequired"),
+            life: 3000,
+          });
+        },
+      )
+      .subscribe();
+  };
+
   const signWithGoogle = async () => {
     googleSigning.value = true;
 
@@ -116,16 +155,16 @@ export const useUserSession = defineStore("userSession", () => {
       console.log(data);
 
       if (error) {
-        const errorTranslated = computed(() => {
-          if (error.code === "over_email_send_rate_limit")
-            return t("form.message.registerFailedEmailRateLimit");
-        });
+        const detail =
+          error.code === "over_email_send_rate_limit"
+            ? t("form.message.registerFailedEmailRateLimit")
+            : error.message;
 
         toast.add({
           group: "userSignToastGroup",
           severity: "warn",
           summary: t("form.message.registerFailed"),
-          detail: errorTranslated,
+          detail,
           life: 3000,
         });
         return false;
@@ -183,19 +222,19 @@ export const useUserSession = defineStore("userSession", () => {
       });
 
       if (error) {
-        const errorTranslated = computed(() => {
-          if (error.code === "invalid_credentials")
-            return t("form.message.loginFailedWrongCredentials");
+        let detail = error.message;
 
-          if (error.code === "email_not_confirmed")
-            return t("form.message.loginFailedUnverifiedEmail");
-        });
+        if (error.code === "invalid_credentials") {
+          detail = t("form.message.loginFailedWrongCredentials");
+        } else if (error.code === "email_not_confirmed") {
+          detail = t("form.message.loginFailedUnverifiedEmail");
+        }
 
         toast.add({
           group: "userSignToastGroup",
           severity: "warn",
           summary: t("form.message.loginFailed"),
-          detail: errorTranslated,
+          detail,
           life: 5000,
         });
         return false;
@@ -209,7 +248,7 @@ export const useUserSession = defineStore("userSession", () => {
       });
       return true;
 
-      await checkSession();
+      // await checkSession();
     } catch (err) {
       toast.add({
         group: "userSignToastGroup",
@@ -230,7 +269,22 @@ export const useUserSession = defineStore("userSession", () => {
   ) => {
     isLoggingOut.value = true;
     const silent = options?.silent === true;
+    const isGlobalLogout = logOutScope === "global";
+    const currentUserId = session.value?.user?.id;
+
+    // Prevent consuming our own force-logout event before global revoke finishes.
+    if (isGlobalLogout) {
+      stopForceLogoutListener();
+    }
+
     try {
+      if (isGlobalLogout && currentUserId) {
+        await supabase.from("auth_events").insert({
+          user_id: currentUserId,
+          type: "force_logout",
+        });
+      }
+
       // If you DON'T need "logout all devices", keep local scope:
       const { error } = await supabase.auth.signOut({ scope: logOutScope }); // local
 
@@ -259,6 +313,10 @@ export const useUserSession = defineStore("userSession", () => {
             detail: error.message,
             life: 3000,
           });
+        }
+
+        if (isGlobalLogout && session.value?.user?.id) {
+          startForceLogoutListener(session.value.user.id);
         }
         return;
       }
@@ -301,6 +359,10 @@ export const useUserSession = defineStore("userSession", () => {
           life: 3000,
         });
       }
+
+      if (isGlobalLogout && session.value?.user?.id) {
+        startForceLogoutListener(session.value.user.id);
+      }
     } finally {
       isLoggingOut.value = false;
     }
@@ -310,19 +372,27 @@ export const useUserSession = defineStore("userSession", () => {
     if (unsub) return;
 
     const { data } = supabase.auth.onAuthStateChange((_event, newSession) => {
-      // Immediately reflect Supabase session in UI (prevents icon flicker)
-      session.value = newSession ?? null;
+      if (!newSession) {
+        stopForceLogoutListener();
+        session.value = null;
+        sessionError.value = null;
+        return;
+      }
+
+      session.value = newSession;
       sessionError.value = null;
+      startForceLogoutListener(newSession.user.id);
 
-      if (!newSession) return;
-
-      // Background authoritative validation
+      // optional: keep your existing background validation
       setTimeout(() => {
         void checkSession();
       }, 0);
     });
 
-    unsub = () => data.subscription.unsubscribe();
+    unsub = () => {
+      stopForceLogoutListener();
+      data.subscription.unsubscribe();
+    };
   };
 
   const updateUserData = async (
