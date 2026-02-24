@@ -92,14 +92,6 @@ export const useUserSession = defineStore("userSession", () => {
 
           // logout this device immediately
           await logOut("local", { silent: true });
-
-          toast.add({
-            group: "userSignToastGroup",
-            severity: "warn",
-            summary: t("form.message.logoutSuccess"),
-            detail: t("form.message.loggedRequired"),
-            life: 3000,
-          });
         },
       )
       .subscribe();
