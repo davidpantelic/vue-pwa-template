@@ -4,7 +4,7 @@ export const useUserSession = defineStore("userSession", () => {
   const isLoading = ref(false);
   const isResetPasswordRequestLoading = ref(false);
   const isLoggingOut = ref(false);
-  const isLoggingOutGlobal = ref(false);
+  const isLoggingOutOthers = ref(false);
   const isEditing = ref(false);
   const googleSigning = ref(false);
   const supabase = useSupabaseClient();
@@ -260,18 +260,19 @@ export const useUserSession = defineStore("userSession", () => {
     logOutScope: "local" | "global" | "others" | undefined = "local",
     options?: { silent?: boolean },
   ) => {
-    isLoggingOutGlobal.value = true;
+    isLoggingOut.value = logOutScope === "local";
+    isLoggingOutOthers.value = logOutScope === "others";
     const silent = options?.silent === true;
-    const isGlobalLogout = logOutScope === "global";
+    const isOthersLogout = logOutScope === "others";
     const currentUserId = session.value?.user?.id;
 
-    // Prevent consuming our own force-logout event before global revoke finishes.
-    if (isGlobalLogout) {
+    // Prevent consuming our own force-logout event before remote revoke finishes.
+    if (isOthersLogout) {
       stopForceLogoutListener();
     }
 
     try {
-      if (isGlobalLogout && currentUserId) {
+      if (isOthersLogout && currentUserId) {
         await supabase.from("auth_events").insert({
           user_id: currentUserId,
           type: "force_logout",
@@ -308,20 +309,35 @@ export const useUserSession = defineStore("userSession", () => {
           });
         }
 
-        if (isGlobalLogout && session.value?.user?.id) {
+        if (isOthersLogout && session.value?.user?.id) {
           startForceLogoutListener(session.value.user.id);
         }
         return;
       }
 
       // Normal success
-      session.value = null;
-      sessionError.value = null;
+      if (isOthersLogout) {
+        // Keep this device logged in; only other sessions should be revoked.
+        if (currentUserId) {
+          startForceLogoutListener(currentUserId);
+        }
+
+        toast.add({
+          group: "userSignToastGroup",
+          severity: "info",
+          summary: t("form.message.logoutSuccess"),
+          detail: t("form.message.logoutOthersSuccess"),
+          life: 3000,
+        });
+      } else {
+        session.value = null;
+        sessionError.value = null;
+      }
 
       if (!silent) {
         toast.add({
           group: "userSignToastGroup",
-          severity: "secondary",
+          severity: "info",
           summary: t("form.message.logoutSuccess"),
           life: 3000,
         });
@@ -353,11 +369,12 @@ export const useUserSession = defineStore("userSession", () => {
         });
       }
 
-      if (isGlobalLogout && session.value?.user?.id) {
+      if (isOthersLogout && session.value?.user?.id) {
         startForceLogoutListener(session.value.user.id);
       }
     } finally {
-      isLoggingOutGlobal.value = false;
+      isLoggingOut.value = false;
+      isLoggingOutOthers.value = false;
     }
   };
 
@@ -572,7 +589,7 @@ export const useUserSession = defineStore("userSession", () => {
     isLoading,
     isResetPasswordRequestLoading,
     isLoggingOut,
-    isLoggingOutGlobal,
+    isLoggingOutOthers,
     isEditing,
     googleSigning,
     signWithGoogle,

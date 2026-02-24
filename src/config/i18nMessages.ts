@@ -24,7 +24,7 @@ export const messages = {
       register: "Registruj se",
       login: "Prijavi se",
       logout: "Odjavi se",
-      logoutGlobal: "Odjavi se sa svih uređaja",
+      logoutOthers: "Odjavi se sa ostalih uređaja",
       resetPassword: "Resetujte lozinku",
       or: "ili",
     },
@@ -190,6 +190,7 @@ export const messages = {
         loginSuccess: "Uspešna prijava",
         logoutFailed: "Odjava nije uspela",
         logoutSuccess: "Uspešna odjava",
+        logoutOthersSuccess: "Uspešno ste se odjavili sa svih ostalih uređaja.",
         loggedRequired: "Morate biti prijavljeni",
       },
       validation: {
@@ -313,7 +314,7 @@ export const messages = {
       register: "Register",
       login: "Log in",
       logout: "Log out",
-      logoutGlobal: "Log out from all devices",
+      logoutOthers: "Log out from other devices",
       resetPassword: "Reset password",
       or: "or",
     },
@@ -479,6 +480,8 @@ export const messages = {
         loginSuccess: "Successful login",
         logoutFailed: "Logout failed",
         logoutSuccess: "Successful logout",
+        logoutOthersSuccess:
+          "You have successfully logged out from any other devices.",
         loggedRequired: "You must be logged in",
       },
       validation: {

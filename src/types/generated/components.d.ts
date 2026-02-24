@@ -51,7 +51,7 @@ declare module 'vue' {
     InstallToastAndButton: typeof import('./../../components/installToastAndButton.vue')['default']
     LocaleChange: typeof import('./../../components/localeChange.vue')['default']
     LoginForm: typeof import('./../../components/loginForm.vue')['default']
-    LogoutGlobalButton: typeof import('./../../components/logoutGlobalButton.vue')['default']
+    LogoutOthersButton: typeof import('./../../components/logoutOthersButton.vue')['default']
     Message: typeof import('primevue/message')['default']
     OfflineIndicator: typeof import('./../../components/offlineIndicator.vue')['default']
     Password: typeof import('primevue/password')['default']

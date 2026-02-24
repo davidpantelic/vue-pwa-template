@@ -8,13 +8,13 @@ const userSessionStore = useUserSession();
   <Button
     type="button"
     severity="danger"
-    :label="$t('words.logoutGlobal')"
+    :label="$t('words.logoutOthers')"
     :icon="
-      userSessionStore.isLoggingOutGlobal
+      userSessionStore.isLoggingOutOthers
         ? 'pi pi-spin pi-spinner'
         : 'pi pi-sign-out'
     "
     icon-pos="right"
-    @click="userSessionStore.logOut('global', { silent: true })"
+    @click="userSessionStore.logOut('others', { silent: true })"
   />
 </template>

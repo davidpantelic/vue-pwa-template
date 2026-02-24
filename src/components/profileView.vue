@@ -80,7 +80,7 @@ const avatarUrl = computed(() => {
           @click="userSessionStore.logOut('local')"
         />
 
-        <LogoutGlobalButton />
+        <LogoutOthersButton />
       </template>
     </div>
   </div>
