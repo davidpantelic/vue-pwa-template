@@ -57,6 +57,7 @@ const onFormSubmit = async (e: any): Promise<void> => {
 
     const success = await userSessionStore.updateUserData(payload);
     if (!success && userSessionStore.clickCounter > 5) {
+      toast.removeGroup("resetPasswordRequestToastGroup");
       toast.add({
         group: "resetPasswordRequestToastGroup",
         severity: "warn",

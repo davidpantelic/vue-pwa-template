@@ -5,6 +5,7 @@ export const useUserSession = defineStore("userSession", () => {
   const isResetPasswordRequestLoading = ref(false);
   const isLoggingOut = ref(false);
   const isEditing = ref(false);
+  const googleSigning = ref(false);
   const supabase = useSupabaseClient();
   const session = ref<any | null>(null);
   const sessionError = ref<any | null>(null);
@@ -62,6 +63,36 @@ export const useUserSession = defineStore("userSession", () => {
       console.error(err);
       session.value = null;
       sessionError.value = err;
+    }
+  };
+
+  const signWithGoogle = async () => {
+    googleSigning.value = true;
+
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/google-auth-confirmation`,
+        },
+      });
+
+      if (error) {
+        console.log(error);
+
+        toast.removeGroup("userSignToastGroup");
+        toast.add({
+          group: "userSignToastGroup",
+          severity: "warn",
+          summary: t("googleAuth.failedSigning"),
+          life: 4000,
+        });
+        return;
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      googleSigning.value = false;
     }
   };
 
@@ -297,44 +328,42 @@ export const useUserSession = defineStore("userSession", () => {
   const updateUserData = async (
     credentials: userCredentials["edit"],
   ): Promise<boolean> => {
-    isEditing.value = true;
-
     if (!session.value?.user) return false;
 
-    const usernameChanged =
-      session.value.user.user_metadata.full_name.trim() !==
-        credentials.username.trim() ||
-      session.value.user.user_metadata.display_name.trim() !==
-        credentials.username.trim();
-
-    const emailChanged =
-      trimLowerString(session.value.user.email) !==
-      trimLowerString(credentials.email);
+    isEditing.value = true;
 
     try {
+      const user = session.value.user;
+      const metadata = user.user_metadata ?? {};
+
+      const nextUsername = (credentials.username ?? "").trim();
+      const nextEmail = trimLowerString(credentials.email ?? "");
+
+      const currentUsername =
+        [metadata.display_name, metadata.full_name, metadata.name]
+          .find((v) => typeof v === "string" && v.trim().length > 0)
+          ?.trim() ?? "";
+
+      const currentEmail = trimLowerString(user.email ?? "");
+
+      const usernameChanged = currentUsername !== nextUsername;
+      const emailChanged = currentEmail !== nextEmail;
+
       if (!usernameChanged && !emailChanged) {
-        if (clickCounter.value > 5) {
-          clickCounter.value = 4;
-        } else {
-          clickCounter.value++;
-        }
+        clickCounter.value =
+          clickCounter.value > 5 ? 4 : clickCounter.value + 1;
         return false;
       }
 
-      const updateUserInfo: Record<string, any> = {
-        email: trimLowerString(credentials.email),
+      const updateUserInfo = {
+        email: nextEmail,
         data: {
           lang: locale.value,
+          name: nextUsername,
+          full_name: nextUsername,
+          display_name: nextUsername,
         },
       };
-
-      if (session.value.user.user_metadata.full_name) {
-        updateUserInfo.data.full_name = credentials.username?.trim() || "";
-      }
-
-      if (session.value.user.user_metadata.display_name) {
-        updateUserInfo.data.display_name = credentials.username?.trim() || "";
-      }
 
       const { error } = await supabase.auth.updateUser(updateUserInfo, {
         emailRedirectTo: `${window.location.origin}/email-changed`,
@@ -481,6 +510,8 @@ export const useUserSession = defineStore("userSession", () => {
     isResetPasswordRequestLoading,
     isLoggingOut,
     isEditing,
+    googleSigning,
+    signWithGoogle,
     supabase,
     checkSession,
     session,
