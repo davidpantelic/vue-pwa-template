@@ -5,13 +5,27 @@ const userSessionStore = useUserSession();
 
 const { t } = useI18n();
 const editProfileForm = ref(false);
+
+const avatarUrl = computed(() => {
+  const metadata = userSessionStore.session?.user?.user_metadata ?? {};
+  return metadata.avatar_url ?? metadata.picture ?? metadata.photo_url ?? null;
+});
 </script>
 
 <template>
   <div class="flex flex-col gap-3">
     <div class="font-medium text-center">
+      <Avatar
+        v-if="avatarUrl"
+        :image="avatarUrl || undefined"
+        size="xlarge"
+        class="rounded-sm overflow-hidden"
+      />
       <h3>
-        {{ userSessionStore.session.user.user_metadata.display_name }}
+        {{
+          userSessionStore.session.user.user_metadata.full_name ??
+          userSessionStore.session.user.user_metadata.display_name
+        }}
       </h3>
       <h3>
         {{ userSessionStore.session.user.email }}

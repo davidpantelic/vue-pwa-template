@@ -5,6 +5,11 @@ const { t, locale } = useI18n();
 const profileDialogShow = ref<boolean>(false);
 const userSessionStore = useUserSession();
 
+const avatarUrl = computed(() => {
+  const metadata = userSessionStore.session?.user?.user_metadata ?? {};
+  return metadata.avatar_url ?? metadata.picture ?? metadata.photo_url ?? null;
+});
+
 const userForms = computed(() => {
   const loginWord = t("words.login");
   const registerWord = t("words.register");
@@ -36,8 +41,16 @@ watch(
     :icon="userSessionStore.session ? 'pi pi-user' : 'pi pi-sign-in'"
     severity="secondary"
     size="large"
+    class="p-0!"
+    :variant="avatarUrl ? 'text' : 'simple'"
     @click="profileDialogShow = true"
-  />
+  >
+    <Avatar
+      v-if="userSessionStore.session && avatarUrl"
+      :image="avatarUrl || undefined"
+      size="large"
+    />
+  </Button>
 
   <Dialog
     v-model:visible="profileDialogShow"
@@ -56,6 +69,12 @@ watch(
         fluid
         class="mb-3"
       />
+
+      <GoogleAuthButton />
+
+      <Divider align="center" type="solid">
+        {{ $t("words.or") }}
+      </Divider>
 
       <LoginForm v-if="selectedUserForm === userForms[0]" />
       <RegisterForm

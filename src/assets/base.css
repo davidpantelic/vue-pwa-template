@@ -134,6 +134,8 @@ img {
   padding-inline: 6px;
 }
 
+.p-toast-summary:empty,
+.p-toast-detail:empty,
 .p-toast-message-icon:empty {
   display: none;
 }

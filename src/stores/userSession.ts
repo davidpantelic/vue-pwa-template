@@ -45,7 +45,7 @@ export const useUserSession = defineStore("userSession", () => {
 
         if (
           !data.session.user.new_email &&
-          data.session.user.email != data.session.user.user_metadata.email
+          data.session.user.email !== data.session.user.user_metadata.email
         ) {
           const { error } = await supabase.auth.updateUser({
             data: {
@@ -71,7 +71,7 @@ export const useUserSession = defineStore("userSession", () => {
     isLoading.value = true;
     try {
       const { data, error } = await supabase.auth.signUp({
-        email: credentials.email,
+        email: trimLowerString(credentials.email),
         password: credentials.password,
         options: {
           data: {
@@ -147,7 +147,7 @@ export const useUserSession = defineStore("userSession", () => {
     isLoading.value = true;
     try {
       const { error } = await supabase.auth.signInWithPassword({
-        email: credentials.email,
+        email: trimLowerString(credentials.email),
         password: credentials.password,
       });
 
@@ -299,9 +299,17 @@ export const useUserSession = defineStore("userSession", () => {
   ): Promise<boolean> => {
     isEditing.value = true;
 
+    if (!session.value?.user) return false;
+
     const usernameChanged =
-      session.value.user.user_metadata.display_name != credentials.username;
-    const emailChanged = session.value.user.email != credentials.email;
+      session.value.user.user_metadata.full_name.trim() !==
+        credentials.username.trim() ||
+      session.value.user.user_metadata.display_name.trim() !==
+        credentials.username.trim();
+
+    const emailChanged =
+      trimLowerString(session.value.user.email) !==
+      trimLowerString(credentials.email);
 
     try {
       if (!usernameChanged && !emailChanged) {
@@ -313,18 +321,24 @@ export const useUserSession = defineStore("userSession", () => {
         return false;
       }
 
-      const { error } = await supabase.auth.updateUser(
-        {
-          email: credentials.email,
-          data: {
-            display_name: credentials.username?.trim() || "no_name",
-            lang: locale.value,
-          },
+      const updateUserInfo: Record<string, any> = {
+        email: trimLowerString(credentials.email),
+        data: {
+          lang: locale.value,
         },
-        {
-          emailRedirectTo: `${window.location.origin}/email-changed`,
-        },
-      );
+      };
+
+      if (session.value.user.user_metadata.full_name) {
+        updateUserInfo.data.full_name = credentials.username?.trim() || "";
+      }
+
+      if (session.value.user.user_metadata.display_name) {
+        updateUserInfo.data.display_name = credentials.username?.trim() || "";
+      }
+
+      const { error } = await supabase.auth.updateUser(updateUserInfo, {
+        emailRedirectTo: `${window.location.origin}/email-changed`,
+      });
 
       if (error) {
         console.error(error);

@@ -8,9 +8,21 @@ const userSessionStore = useUserSession();
 const { t, locale } = useI18n();
 const toast = useToast();
 const emit = defineEmits(["closeEdit"]);
+const isGoogleUser = computed(() => {
+  const user = userSessionStore.session?.user as any;
+  if (!user) return false;
+  const providers = (user.identities ?? []).map(
+    (identity: any) => identity.provider,
+  );
+  return (
+    providers.includes("google") || user.app_metadata?.provider === "google"
+  );
+});
 
 const initialValues = ref<userCredentials["edit"]>({
-  username: userSessionStore.session.user.user_metadata.display_name,
+  username:
+    userSessionStore.session.user.user_metadata.full_name ??
+    userSessionStore.session.user.user_metadata.display_name,
   email: userSessionStore.session.user.email,
 });
 
@@ -19,7 +31,7 @@ const buildSchema = () =>
     username: z
       .string()
       .min(1, { message: t("form.validation.usernameRequired") })
-      .max(10, { message: t("form.validation.usernameMaxLength") }),
+      .max(30, { message: t("form.validation.usernameMaxLength") }),
     email: z.string().email({ message: t("form.validation.emailRequired") }),
   });
 
@@ -32,9 +44,18 @@ const onFormSubmit = async (e: any): Promise<void> => {
   // e.reset: A function that resets the form to its initial state.
 
   if (e.valid) {
-    // console.log(e);
+    const payload: userCredentials["edit"] = {
+      ...e.values,
+      // Google-auth users keep provider-managed email in this UI flow.
+      email: isGoogleUser.value
+        ? userSessionStore.session.user.email
+        : e.values.email,
+    };
 
-    const success = await userSessionStore.updateUserData(e.values);
+    // console.log(payload);
+    // return;
+
+    const success = await userSessionStore.updateUserData(payload);
     if (!success && userSessionStore.clickCounter > 5) {
       toast.add({
         group: "resetPasswordRequestToastGroup",
@@ -58,6 +79,16 @@ watch(
 
 const onFormReset = () => {
   emit("closeEdit");
+};
+
+const showToast = () => {
+  toast.removeGroup("resetPasswordRequestToastGroup");
+  toast.add({
+    group: "resetPasswordRequestToastGroup",
+    severity: "info",
+    detail: t("googleAuth.googleEmailLocked"),
+    life: 4000,
+  });
 };
 </script>
 
@@ -102,6 +133,8 @@ const onFormReset = () => {
         id="email"
         type="email"
         placeholder="Email"
+        :disabled="isGoogleUser"
+        @pointerdown="showToast"
         fluid
       />
       <Message

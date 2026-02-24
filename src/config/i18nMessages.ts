@@ -25,6 +25,7 @@ export const messages = {
       login: "Prijavi se",
       logout: "Odjavi se",
       resetPassword: "Resetujte lozinku",
+      or: "ili",
     },
     meta: {
       description: "Webdak Vue3 PWA šablon",
@@ -193,7 +194,7 @@ export const messages = {
       validation: {
         titleRequired: "Naslov je obavezan",
         usernameRequired: "Korisničko ime je obavezno",
-        usernameMaxLength: "Korisničko ime može imati 10 karaktera ili manje",
+        usernameMaxLength: "Korisničko ime može imati 30 karaktera ili manje",
         emailRequired: "Email je obavezan",
         passwordRequired: "Lozinka je obavezna",
         passwordConfirmRequired: "Potvrda lozinke je obavezna",
@@ -204,6 +205,14 @@ export const messages = {
     authConfirmation: {
       title: "Email adresa je verifikovana",
       text: "Verifikacija je uspešna. Sada se možete prijaviti (u aplikaciji ako ste je instalirali) sa svojim podacima.",
+    },
+    googleAuth: {
+      pageConfirmationTitle: "Prijavljeni sa Google nalogom",
+      pageConfirmationText:
+        "Uspešno ste se prijavili sa Google nalogom, možete nastaviti da koristite aplikaciju.",
+      googleEmailLocked:
+        "Za naloge prijavljene preko Google-a, nije moguće promeniti email adresu na ovaj način.",
+      failedSigning: "Prijavljivanje sa Google nalogom nije uspelo.",
     },
     userEdit: {
       editButton: "Izmeni informacije",
@@ -304,6 +313,7 @@ export const messages = {
       login: "Login",
       logout: "Logout",
       resetPassword: "Reset password",
+      or: "or",
     },
     meta: {
       description: "Reusable Vue3 PWA template by Webdak",
@@ -472,13 +482,21 @@ export const messages = {
       validation: {
         titleRequired: "Title is required",
         usernameRequired: "Username is required",
-        usernameMaxLength: "Username can be 10 characters or less",
+        usernameMaxLength: "Username can be 30 characters or less",
         emailRequired: "Email is required",
         passwordRequired: "Password is required",
         passwordConfirmRequired: "Password confirmation is required",
         passwordMismatch: "Passwords do not match",
         passwordMinLength: "Password must be at least 6 characters",
       },
+    },
+    googleAuth: {
+      pageConfirmationTitle: "Signed with Google",
+      pageConfirmationText:
+        "You have successfully signed with Google account, you may continue to use the app.",
+      googleEmailLocked:
+        "For accounts signed in through Google, it is not possible to change the email address in this way.",
+      failedSigning: "Failed to sign in with Google account.",
     },
     userEdit: {
       editButton: "Edit info",
