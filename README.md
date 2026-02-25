@@ -11,6 +11,7 @@ A modern, production-ready Vue3 PWA template for building Progressive Web Applic
 - [Installation](#installation)
 - [Usage](#usage)
 - [Configuration](#configuration)
+- [Production Checklist](#production-checklist)
 - [Building for Production](#building-for-production)
 - [License](#license)
 - [Trademark Notice](#trademark-notice)
@@ -24,10 +25,13 @@ This is a Progressive Web App (PWA) built with Vue 3, TypeScript, and Vite. The 
 - **Progressive Web App (PWA)** - Installable on desktop and mobile devices
 - **API-ready** - Loader, error handling, offline queue
 - **Offline Support** - Full functionality when internet connection is unavailable
+- **Auth Flows** - Email/password, Google OAuth, email confirmation, password reset
+- **Session Controls** - Logout local session and logout other devices
 - **Push Notifications** - Real-time notifications on supported devices
 - **Screen Wake Lock** - Toggle on/off screen wake lock
 - **Theme Support** - Light / Dark
 - **Internationalization** - Multi language, localization features, etc
+- **Legal Pages** - Built-in Privacy Policy and Terms of Use pages (EN/SR)
 - **Responsive Design** - Works seamlessly on all screen sizes
 - **Type-Safe** - Built with TypeScript for better code quality
 - **Fast & Optimized** - Vite ensures quick build times and optimal performance
@@ -115,6 +119,16 @@ npm run lint
 
 ## Configuration
 
+### Environment Variables
+
+Create `.env.development` (or `.env`) and set:
+
+```env
+VITE_SUPABASE_URL=
+VITE_SUPABASE_ANON_KEY=
+VITE_VAPID_PUBLIC_KEY=
+```
+
 ### PWA Installation
 
 To install the app:
@@ -127,9 +141,61 @@ To install the app:
 
 Users can enable notifications by clicking the notification icon. The app will request permission and display notifications on supported devices.
 
+For the `send-push` Supabase Edge Function, configure function secrets:
+
+- `SUPABASE_URL`
+- `SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `APP_URL`
+- `VAPID_KEYS_JSON`
+- `VAPID_SUBJECT` (or `VAPID_URL`)
+
 ### Offline Mode
 
 The app automatically caches essential resources. When offline, a network indicator appears in the UI. Data syncs automatically when connection is restored.
+
+### Supabase Auth Setup
+
+- Enable desired auth providers (Email/Password, Google).
+- For Google OAuth, add callback URI in Google Cloud:
+  - `https://<your-project-ref>.supabase.co/auth/v1/callback`
+- Add redirect URLs in Supabase Auth URL allow list (for local + production), for example:
+  - `http://localhost:5173/auth-confirmation`
+  - `http://localhost:5173/password-reset`
+  - `http://localhost:5173/google-auth-confirmation`
+  - `https://<your-domain>/auth-confirmation`
+  - `https://<your-domain>/password-reset`
+  - `https://<your-domain>/google-auth-confirmation`
+
+### Legal Pages
+
+- Privacy Policy: `/privacy`
+- Terms of Use: `/terms`
+
+## Production Checklist
+
+- Set frontend env vars in your hosting platform:
+  - `VITE_SUPABASE_URL`
+  - `VITE_SUPABASE_ANON_KEY`
+  - `VITE_VAPID_PUBLIC_KEY`
+- Configure Supabase Auth URL allow list for all used redirect paths (local + production).
+- For Google OAuth:
+  - set Google callback URI to `https://<your-project-ref>.supabase.co/auth/v1/callback`
+  - configure Google Client ID/Secret in Supabase provider settings
+- Enable and verify RLS policies on app tables.
+- Ensure required tables exist and are configured:
+  - `records`
+  - `push_subscriptions`
+  - `auth_events` (if using logout-other-devices realtime signal)
+- Configure Edge Function secrets for `send-push`:
+  - `SUPABASE_URL`
+  - `SUPABASE_ANON_KEY`
+  - `SUPABASE_SERVICE_ROLE_KEY`
+  - `APP_URL`
+  - `VAPID_KEYS_JSON`
+  - `VAPID_SUBJECT` (or `VAPID_URL`)
+- Verify service worker/PWA behavior on HTTPS production domain.
+- Verify Privacy Policy and Terms pages are reachable and linked in UI.
 
 ## Building for Production
 
