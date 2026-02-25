@@ -65,6 +65,20 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    '/privacy': RouteRecordInfo<
+      '/privacy',
+      '/privacy',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/terms': RouteRecordInfo<
+      '/terms',
+      '/terms',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
     '/test': RouteRecordInfo<
       '/test',
       '/test',
@@ -118,6 +132,18 @@ declare module 'vue-router/auto-routes' {
     'src/pages/password-reset.vue': {
       routes:
         | '/password-reset'
+      views:
+        | never
+    }
+    'src/pages/privacy.vue': {
+      routes:
+        | '/privacy'
+      views:
+        | never
+    }
+    'src/pages/terms.vue': {
+      routes:
+        | '/terms'
       views:
         | never
     }

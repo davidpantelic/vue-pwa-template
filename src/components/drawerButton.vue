@@ -10,7 +10,7 @@ const visible = ref(false);
       <CheckUpdateButton />
       <RefreshButton />
       <EnablePushButton />
-      <AboutApp />
+      <AboutApp @page-link="visible = false" />
       <LocaleChange />
     </div>
   </Drawer>

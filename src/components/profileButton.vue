@@ -56,7 +56,7 @@ watch(
     v-model:visible="profileDialogShow"
     modal
     :header="$t('words.profile')"
-    class="w-sm max-w-full mt-20!"
+    class="w-sm max-w-full mt-12!"
     position="top"
   >
     <ProfileView v-if="userSessionStore.session" />
@@ -81,6 +81,29 @@ watch(
         v-if="selectedUserForm === userForms[1]"
         @successful-registration="selectedUserForm = userForms[0]"
       />
+
+      <div class="flex flex-wrap mt-3 justify-center gap-x-5">
+        <Button asChild v-slot="slotProps" variant="link" size="small">
+          <RouterLink
+            to="/privacy"
+            class="p-0! w-fit hover:underline"
+            :class="slotProps.class"
+            @click="profileDialogShow = false"
+          >
+            {{ $t("privacyPolicy.title") }}
+          </RouterLink>
+        </Button>
+        <Button asChild v-slot="slotProps" variant="link" size="small">
+          <RouterLink
+            to="/terms"
+            class="p-0! w-fit hover:underline"
+            :class="slotProps.class"
+            @click="profileDialogShow = false"
+          >
+            {{ $t("termsOfUse.title") }}
+          </RouterLink>
+        </Button>
+      </div>
     </div>
 
     <template #closebutton>

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const aboutDialogVisible = ref(false);
+const emit = defineEmits(["pageLink"]);
 
 const openDialog = () => {
   aboutDialogVisible.value = true;
@@ -116,17 +117,40 @@ const openLink = (url: string) => {
       <AccordionPanel value="3">
         <AccordionHeader>{{ $t("aboutApp.title") }}</AccordionHeader>
         <AccordionContent>
-          <div class="flex flex-col gap-3">
+          <div class="flex flex-col gap-1">
             <p>
               {{ $t("aboutApp.text1") }}
               <Button
                 label="Webdak"
+                variant="link"
                 icon="pi pi-external-link"
                 size="small"
+                class="p-0!"
                 iconPos="right"
                 @click="openLink('https://webdak.rs')"
               />
             </p>
+
+            <Button asChild v-slot="slotProps" variant="link" size="small">
+              <RouterLink
+                to="/privacy"
+                class="p-0! w-fit hover:underline"
+                :class="slotProps.class"
+                @click="((aboutDialogVisible = false), emit('pageLink'))"
+              >
+                {{ $t("privacyPolicy.title") }}
+              </RouterLink>
+            </Button>
+            <Button asChild v-slot="slotProps" variant="link" size="small">
+              <RouterLink
+                to="/terms"
+                class="p-0! w-fit hover:underline"
+                :class="slotProps.class"
+                @click="((aboutDialogVisible = false), emit('pageLink'))"
+              >
+                {{ $t("termsOfUse.title") }}
+              </RouterLink>
+            </Button>
           </div>
         </AccordionContent>
       </AccordionPanel>

@@ -1,7 +1,13 @@
 export const messages = {
   sr: {
+    appInfo: {
+      name: "Webdak PWA",
+    },
     words: {
       hello: "Zdravo Svete!",
+      appName: "Ime aplikacije",
+      lastUpdate: "Poslednje ažuriranje",
+      contact: "Kontakt",
       home: "Početna",
       chooseLanguage: "Izaberi jezik",
       install: "Instaliraj",
@@ -288,10 +294,22 @@ export const messages = {
       title: "O aplikaciji",
       text1: "Izrada PWA i web aplikacije",
     },
+    privacyPolicy: {
+      title: "Politika privatnosti",
+    },
+    termsOfUse: {
+      title: "Uslovi korišćenja",
+    },
   },
   en: {
+    appInfo: {
+      name: "Webdak PWA",
+    },
     words: {
       hello: "Hello World!",
+      appName: "App name",
+      lastUpdate: "Last updated",
+      contact: "Contact",
       home: "Home",
       chooseLanguage: "Choose language",
       install: "Install",
@@ -580,6 +598,12 @@ export const messages = {
     aboutApp: {
       title: "About application",
       text1: "Developing PWAs and web applications by",
+    },
+    privacyPolicy: {
+      title: "Privacy policy",
+    },
+    termsOfUse: {
+      title: "Terms of Use",
     },
   },
 };
