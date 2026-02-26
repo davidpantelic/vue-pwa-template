@@ -11,6 +11,7 @@ A modern, production-ready Vue3 PWA template for building Progressive Web Applic
 - [Installation](#installation)
 - [Usage](#usage)
 - [Configuration](#configuration)
+- [Supabase Migration Runbook](#supabase-migration-runbook)
 - [Production Checklist](#production-checklist)
 - [Building for Production](#building-for-production)
 - [License](#license)
@@ -160,17 +161,65 @@ The app automatically caches essential resources. When offline, a network indica
 - For Google OAuth, add callback URI in Google Cloud:
   - `https://<your-project-ref>.supabase.co/auth/v1/callback`
 - Add redirect URLs in Supabase Auth URL allow list (for local + production), for example:
-  - `http://localhost:5173/auth-confirmation`
-  - `http://localhost:5173/password-reset`
-  - `http://localhost:5173/google-auth-confirmation`
-  - `https://<your-domain>/auth-confirmation`
-  - `https://<your-domain>/password-reset`
-  - `https://<your-domain>/google-auth-confirmation`
+  - `/auth-confirmation`
+  - `/email-changed`
+  - `/google-auth-confirmation`
+  - `/password-reset`
 
 ### Legal Pages
 
 - Privacy Policy: `/privacy`
 - Terms of Use: `/terms`
+
+## Supabase Migration Runbook
+
+Use this when provisioning a new Supabase project from this template.
+
+### 1. Link CLI to target project
+
+```bash
+supabase link --project-ref <your_project_ref>
+```
+
+### 2. Apply all migrations
+
+```bash
+supabase db push
+```
+
+Current migration order (by timestamp):
+
+1. `20260226134609_add-records.sql`
+2. `20260226143122_add-push-sub.sql`
+3. `20260226212729_add-auth-events.sql`
+4. `20260226220001_add-profiles.sql`
+5. `20260226223000_add-chat-core.sql`
+6. `20260226223100_add-chat-direct-rpc.sql`
+7. `20260226223200_add-chat-realtime-publication.sql`
+8. `20260226223300_add-rls-auto-enable-event-trigger.sql`
+
+### 3. Deploy edge functions
+
+```bash
+supabase functions deploy send-push
+```
+
+### 4. Set edge function secrets
+
+```bash
+supabase secrets set SUPABASE_URL=...
+supabase secrets set SUPABASE_ANON_KEY=...
+supabase secrets set SUPABASE_SERVICE_ROLE_KEY=...
+supabase secrets set APP_URL=...
+supabase secrets set VAPID_KEYS_JSON=...
+supabase secrets set VAPID_SUBJECT=...
+```
+
+### 5. Configure Supabase Auth dashboard
+
+- Providers: enable Email/Password and Google (if used)
+- URL allow list: add all app redirect URLs (local + production)
+- SMTP and email templates: configure as needed
 
 ## Production Checklist
 

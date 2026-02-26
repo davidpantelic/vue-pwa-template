@@ -145,7 +145,7 @@ export const useUserSession = defineStore("userSession", () => {
         },
       });
 
-      console.log(data);
+      // console.log(data);
 
       if (error) {
         const detail =
