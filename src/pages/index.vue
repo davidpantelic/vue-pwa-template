@@ -3,6 +3,10 @@
 <template>
   <main>
     <h1>Webdak Vue PWA <span class="text-3xl">v36</span></h1>
+    <p v-tooltip="$d(new Date('2026-01-14'), 'numeric')" class="w-fit">
+      {{ $t("words.started") }}:
+      <ArkFormatRelativeTime :value="new Date('2026-01-14')" />
+    </p>
     <br />
     <h2>{{ $t("words.hello") }}</h2>
     <p>{{ $d(new Date(), "time") }}</p>
@@ -23,5 +27,38 @@
     <Divider />
 
     <SendTestPush />
+
+    <Divider />
+
+    <h2>API testing</h2>
+    <br />
+
+    <WriteToIndexedDB />
+
+    <Divider />
+
+    <ReadFromIndexedDB />
+
+    <Divider />
+
+    <WriteToSupabase />
+
+    <Divider />
+
+    <ReadFromSupabase />
+
+    <Divider />
+
+    <SyncDb />
+
+    <Divider />
+
+    <EditDeleteRecords />
+
+    <Divider />
+
+    <ShowDeletedRecords />
+
+    <Divider />
   </main>
 </template>

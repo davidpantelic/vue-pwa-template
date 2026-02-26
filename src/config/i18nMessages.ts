@@ -33,6 +33,7 @@ export const messages = {
       logoutOthers: "Odjavi se sa ostalih uređaja",
       resetPassword: "Resetujte lozinku",
       or: "ili",
+      started: "Pokrenuto",
     },
     meta: {
       description: "Webdak Vue3 PWA šablon",
@@ -335,6 +336,7 @@ export const messages = {
       logoutOthers: "Log out from other devices",
       resetPassword: "Reset password",
       or: "or",
+      started: "Started",
     },
     meta: {
       description: "Reusable Vue3 PWA template by Webdak",

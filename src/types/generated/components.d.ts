@@ -76,4 +76,7 @@ declare module 'vue' {
     WriteToIndexedDB: typeof import('./../../components/writeToIndexedDB.vue')['default']
     WriteToSupabase: typeof import('./../../components/writeToSupabase.vue')['default']
   }
+  export interface GlobalDirectives {
+    Tooltip: typeof import('primevue/tooltip')['default']
+  }
 }

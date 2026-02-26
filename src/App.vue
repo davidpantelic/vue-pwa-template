@@ -52,24 +52,21 @@ useSeoMeta({
 
 <template>
   <header class="flex mb-5 items-center gap-3 justify-start p-1">
-    <img alt="Vue logo" class="logo size-20" src="@/assets/logo.svg" />
+    <RouterLink to="/"
+      ><img alt="Vue logo" class="logo size-20" src="@/assets/logo.svg"
+    /></RouterLink>
 
-    <nav class="flex gap-3 items-center pt-16">
-      <RouterLink to="/">{{ t("words.home") }}</RouterLink>
-      <RouterLink to="/about">Test 1</RouterLink>
-      <RouterLink to="/test">Test 2</RouterLink>
-      <div
-        class="absolute right-1 top-1 flex flex-wrap gap-1 xxs:gap-2 xs:gap-3 p-1 xs:p-2 max-w-full"
-      >
-        <OfflineIndicator />
-        <UpdateToastAndButton />
-        <InstallToastAndButton />
-        <Suspense>
-          <ProfileButton />
-        </Suspense>
-        <DrawerButton />
-      </div>
-    </nav>
+    <div
+      class="absolute right-1 top-1 flex flex-wrap gap-1 xxs:gap-2 xs:gap-3 p-1 xs:p-2 max-w-full"
+    >
+      <OfflineIndicator />
+      <UpdateToastAndButton />
+      <InstallToastAndButton />
+      <Suspense>
+        <ProfileButton />
+      </Suspense>
+      <DrawerButton />
+    </div>
   </header>
 
   <Suspense>
