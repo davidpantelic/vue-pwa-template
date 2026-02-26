@@ -59,3 +59,28 @@ export type userCredentials = {
     passwordConfirm?: string;
   };
 };
+
+export type ChatProfile = {
+  id: string;
+  email?: string | null;
+  display_name?: string | null;
+  avatar_url?: string | null;
+};
+
+export type ChatConversationItem = {
+  conversationId: string;
+  otherUserId: string;
+  otherDisplayName: string;
+  otherEmail?: string | null;
+  otherAvatarUrl?: string | null;
+  lastMessageBody?: string | null;
+  lastMessageAt?: string | null;
+};
+
+export type ChatMessage = {
+  id: string;
+  conversation_id: string;
+  sender_id: string;
+  body: string;
+  created_at: string;
+};

@@ -474,6 +474,30 @@ export const useUserSession = defineStore("userSession", () => {
         return false;
       }
 
+      // Keep public profile in sync for features that read from profiles table (e.g. chat).
+      const { error: profileSyncError } = await supabase
+        .from("profiles")
+        .upsert(
+          {
+            id: user.id,
+            email: user.email,
+            display_name: nextUsername,
+            avatar_url:
+              metadata.avatar_url ??
+              metadata.picture ??
+              metadata.photo_url ??
+              null,
+            lang: locale.value,
+          },
+          { onConflict: "id" },
+        );
+      if (profileSyncError) {
+        console.warn(
+          "Profile sync failed after auth.updateUser",
+          profileSyncError,
+        );
+      }
+
       toast.add({
         group: "resetPasswordRequestToastGroup",
         severity: "success",

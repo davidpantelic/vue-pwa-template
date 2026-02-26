@@ -37,6 +37,13 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    '/chat': RouteRecordInfo<
+      '/chat',
+      '/chat',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
     '/email-changed': RouteRecordInfo<
       '/email-changed',
       '/email-changed',
@@ -101,6 +108,12 @@ declare module 'vue-router/auto-routes' {
     'src/pages/auth-confirmation.vue': {
       routes:
         | '/auth-confirmation'
+      views:
+        | never
+    }
+    'src/pages/chat.vue': {
+      routes:
+        | '/chat'
       views:
         | never
     }
