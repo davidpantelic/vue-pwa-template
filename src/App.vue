@@ -51,14 +51,12 @@ useSeoMeta({
 </script>
 
 <template>
-  <header class="flex mb-5 items-center gap-3 justify-start p-1">
-    <RouterLink to="/"
-      ><img alt="Vue logo" class="logo size-20" src="@/assets/logo.svg"
-    /></RouterLink>
+  <header class="absolute w-full flex items-center gap-3 justify-between p-1">
+    <RouterLink to="/">
+      <img alt="Vue logo" class="logo size-16" src="@/assets/logo.svg" />
+    </RouterLink>
 
-    <div
-      class="absolute right-1 top-1 flex flex-wrap gap-1 xxs:gap-2 xs:gap-3 p-1 xs:p-2 max-w-full"
-    >
+    <div class="flex flex-wrap gap-1 xxs:gap-2 xs:gap-3 p-1 xs:p-2 max-w-full">
       <OfflineIndicator />
       <UpdateToastAndButton />
       <InstallToastAndButton />

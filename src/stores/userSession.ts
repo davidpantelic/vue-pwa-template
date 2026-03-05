@@ -1,4 +1,4 @@
-import type { userCredentials } from "@/types";
+import type { userCredentials, ChatProfile } from "@/types";
 
 export const useUserSession = defineStore("userSession", () => {
   const isLoading = ref(false);
@@ -14,6 +14,8 @@ export const useUserSession = defineStore("userSession", () => {
   const toast = useToast();
   let unsub: (() => void) | null = null;
   const clickCounter = ref(0);
+  const loadingAllUsers = ref(false);
+  const allUsers = ref<ChatProfile[]>([]);
 
   function isSessionAlreadyGone(err: any) {
     const code = err?.code ?? err?.error?.code;
@@ -609,6 +611,23 @@ export const useUserSession = defineStore("userSession", () => {
     }
   };
 
+  const getAllUsers = async () => {
+    loadingAllUsers.value = true;
+    try {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .neq("id", session.value.user.id)
+        .order("created_at", { ascending: true });
+
+      allUsers.value = data ?? [];
+    } catch (err) {
+      console.error(err);
+    } finally {
+      loadingAllUsers.value = false;
+    }
+  };
+
   return {
     isLoading,
     isResetPasswordRequestLoading,
@@ -629,5 +648,7 @@ export const useUserSession = defineStore("userSession", () => {
     resetPasswordRequest,
     updateUserPassword,
     clickCounter,
+    getAllUsers,
+    allUsers,
   };
 });

@@ -77,6 +77,15 @@ export type ChatConversationItem = {
   lastMessageAt?: string | null;
 };
 
+export type ChatListItem = {
+  userId: string;
+  email: string | null;
+  displayName: string;
+  avatarUrl?: string | "";
+  conversationId: string | null;
+  lastMessageBody: string | null;
+};
+
 export type ChatMessage = {
   id: string;
   conversation_id: string;

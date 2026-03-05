@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "tailwindcss-primeui";
 
 @theme {
   --breakpoint-xxs: 320px;
@@ -8,10 +9,43 @@
 :root {
   color-scheme: light;
   --body-bg: var(--p-surface-50);
+  --card-layer-a: var(--p-surface-0); /* outer card */
+  --card-layer-b: var(--p-surface-50); /* nested card */
+  --p-scrollpanel-bar-size: 5px !important;
+  --p-scrollpanel-bar-background: var(--color-primary-emphasis) !important;
 }
 :root.dark-mode {
   color-scheme: dark;
   --body-bg: var(--p-surface-950);
+  --card-layer-a: var(--p-surface-900);
+  --card-layer-b: var(--p-surface-950);
+}
+
+.p-card {
+  --p-card-background: var(--card-layer-a);
+}
+.p-card .p-card {
+  --p-card-background: var(--card-layer-b);
+}
+.p-card .p-card .p-card {
+  --p-card-background: var(--card-layer-a);
+}
+
+.p-panel {
+  --p-panel-background: var(--card-layer-a);
+}
+.p-panel .p-panel {
+  --p-panel-background: var(--card-layer-b);
+}
+.p-panel .p-panel .p-panel {
+  --p-panel-background: var(--card-layer-a);
+}
+
+.p-panel .p-card {
+  --p-card-background: var(--card-layer-b);
+}
+.p-panel .p-card .p-card {
+  --p-card-background: var(--card-layer-a);
 }
 
 html,
@@ -42,6 +76,10 @@ body {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+main {
+  padding-top: 80px;
 }
 
 h1 {

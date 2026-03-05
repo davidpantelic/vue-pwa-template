@@ -1,10 +1,5 @@
-import type { ChatConversationItem, ChatMessage, ChatProfile } from "@/types";
+import type { ChatConversationItem, ChatMessage } from "@/types";
 import { useUserSession } from "@/stores/userSession";
-
-type ParticipantRow = {
-  conversation_id: string;
-  user_id: string;
-};
 
 export function useChat() {
   const supabase = useSupabaseClient();
@@ -101,7 +96,7 @@ export function useChat() {
         },
       )
       .subscribe((status, err) => {
-        console.log("chat realtime status:", status, err ?? "");
+        // console.log("chat realtime status:", status, err ?? "");
       });
   };
 
@@ -129,7 +124,9 @@ export function useChat() {
     await loadMessages(conversationId);
   };
 
-  const loadConversations = async () => {
+  const loadConversations = async (options?: {
+    skipMessageHydration?: boolean;
+  }) => {
     const userId = currentUserId.value;
     if (!userId) {
       conversations.value = [];
@@ -141,115 +138,42 @@ export function useChat() {
     loadingConversations.value = true;
     chatError.value = null;
     try {
-      const { data: myRows, error: myError } = await supabase
-        .from("chat_participants")
-        .select("conversation_id")
-        .eq("user_id", userId);
-      if (myError) throw myError;
+      const { data: summaries, error: summariesError } = await supabase.rpc(
+        "get_chat_conversation_summaries",
+      );
+      if (summariesError) throw summariesError;
 
-      const conversationIds = Array.from(
-        new Set((myRows ?? []).map((r: any) => r.conversation_id)),
+      const items = (summaries ?? []) as Array<{
+        conversation_id: string;
+        other_user_id: string;
+        other_display_name: string | null;
+        other_email: string | null;
+        other_avatar_url: string | null;
+        last_message_body: string | null;
+        last_message_at: string | null;
+      }>;
+
+      conversations.value = items.map(
+        (row): ChatConversationItem => ({
+          conversationId: row.conversation_id,
+          otherUserId: row.other_user_id,
+          otherDisplayName: row.other_display_name || row.other_email || "User",
+          otherEmail: row.other_email,
+          otherAvatarUrl: row.other_avatar_url,
+          lastMessageBody: row.last_message_body,
+          lastMessageAt: row.last_message_at,
+        }),
       );
 
-      if (!conversationIds.length) {
+      if (!conversations.value.length) {
         conversations.value = [];
         selectedConversationId.value = null;
         messages.value = [];
         return;
       }
 
-      const { data: participantRows, error: participantError } = await supabase
-        .from("chat_participants")
-        .select("conversation_id, user_id")
-        .in("conversation_id", conversationIds)
-        .neq("user_id", userId);
-      if (participantError) throw participantError;
-
-      const { data: conversationRows, error: conversationError } =
-        await supabase
-          .from("chat_conversations")
-          .select("id, created_by")
-          .in("id", conversationIds);
-      if (conversationError) throw conversationError;
-
-      const createdByMap = new Map<string, string>(
-        (
-          (conversationRows ?? []) as Array<{ id: string; created_by: string }>
-        ).map((row) => [row.id, row.created_by]),
-      );
-
-      const otherByConversation = new Map<string, string>();
-      for (const row of (participantRows ?? []) as ParticipantRow[]) {
-        if (!otherByConversation.has(row.conversation_id)) {
-          otherByConversation.set(row.conversation_id, row.user_id);
-        }
-      }
-
-      const otherUserIds = Array.from(new Set(otherByConversation.values()));
-      let profilesMap = new Map<string, ChatProfile>();
-
-      if (otherUserIds.length) {
-        const { data: profiles, error: profileError } = await supabase
-          .from("profiles")
-          .select("id, email, display_name, avatar_url")
-          .in("id", otherUserIds);
-        if (profileError) throw profileError;
-
-        profilesMap = new Map(
-          ((profiles ?? []) as ChatProfile[]).map((p) => [p.id, p]),
-        );
-      }
-
-      const { data: lastRows, error: lastError } = await supabase
-        .from("chat_messages")
-        .select("conversation_id, body, created_at")
-        .in("conversation_id", conversationIds)
-        .order("created_at", { ascending: false });
-      if (lastError) throw lastError;
-
-      const lastByConversation = new Map<
-        string,
-        { body: string; created_at: string }
-      >();
-      for (const row of (lastRows ?? []) as any[]) {
-        if (!lastByConversation.has(row.conversation_id)) {
-          lastByConversation.set(row.conversation_id, {
-            body: row.body,
-            created_at: row.created_at,
-          });
-        }
-      }
-
-      conversations.value = conversationIds
-        .map((conversationId) => {
-          const otherUserId = otherByConversation.get(conversationId);
-          if (!otherUserId) return null;
-          const profile = profilesMap.get(otherUserId);
-          const last = lastByConversation.get(conversationId);
-          const createdBy = createdByMap.get(conversationId);
-          const hasAnyMessage = Boolean(last);
-
-          // Hide empty conversations from non-creators.
-          if (!hasAnyMessage && createdBy !== userId) {
-            return null;
-          }
-          return {
-            conversationId,
-            otherUserId,
-            otherDisplayName: profile?.display_name || profile?.email || "User",
-            otherEmail: profile?.email,
-            otherAvatarUrl: profile?.avatar_url,
-            lastMessageBody: last?.body ?? null,
-            lastMessageAt: last?.created_at ?? null,
-          } satisfies ChatConversationItem;
-        })
-        .filter(Boolean) as ChatConversationItem[];
-
-      conversations.value.sort((a, b) =>
-        (b.lastMessageAt ?? "").localeCompare(a.lastMessageAt ?? ""),
-      );
-
       if (
+        !options?.skipMessageHydration &&
         selectedConversationId.value &&
         conversations.value.some(
           (c) => c.conversationId === selectedConversationId.value,
@@ -293,7 +217,7 @@ export function useChat() {
       if (rpcError) throw rpcError;
       if (!conversationId) throw new Error("Conversation not created");
 
-      await loadConversations();
+      await loadConversations({ skipMessageHydration: true });
       await openConversation(conversationId as string);
       startRealtime();
     } catch (err: any) {
