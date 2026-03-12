@@ -1,25 +1,3 @@
 {
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }],
-  "redirects": [
-    {
-      "source": "/blog",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/blog/seo-optimizacija-usmerena-na-semantiku-i-organski-rast",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/blog/panic-plast-izrada-proizvoda-od-plastike",
-      "destination": "/projekti/panic-plast",
-      "permanent": true
-    },
-    {
-      "source": "/blog/sta-je-pristupacnost-na-webu-i-zasto-je-bitna",
-      "destination": "/",
-      "permanent": true
-    }
-  ]
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
 }
