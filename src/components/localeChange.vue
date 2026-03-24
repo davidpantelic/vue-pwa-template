@@ -2,7 +2,14 @@
 const { locale, availableLocales } = useI18n();
 
 const localeOptions = computed(() =>
-  availableLocales.map((loc) => ({ label: loc.toUpperCase(), value: loc })),
+  // availableLocales.map((loc) => ({ label: loc.toUpperCase(), value: loc })),
+  [...availableLocales]
+    .sort((a, b) => {
+      if (a === "sr") return -1;
+      if (b === "sr") return 1;
+      return a.localeCompare(b);
+    })
+    .map((loc) => ({ label: loc.toUpperCase(), value: loc })),
 );
 </script>
 

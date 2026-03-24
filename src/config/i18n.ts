@@ -1,6 +1,12 @@
 import { createI18n } from "vue-i18n";
 import type { I18n, I18nOptions } from "vue-i18n";
-import { messages } from "@/config/i18nMessages";
+import srMessages from "@/locales/sr.json";
+import enMessages from "@/locales/en.json";
+
+const messages = {
+  sr: srMessages,
+  en: enMessages,
+} as const;
 
 const datetimeFormats = {
   sr: {
